@@ -1,0 +1,170 @@
+<p>cart works!</p>
+<app-header></app-header>
+
+<main class="cart-page">
+  <div class="container">
+    <div class="cart-header">
+      <h1>Mi Carrito ({{ totalItems }} {{ totalItems === 1 ? 'producto' : 'productos' }})</h1>
+      <button 
+        *ngIf="!isEmpty" 
+        class="clear-cart-btn"
+        (click)="clearCart()"
+      >
+        Vaciar Carrito
+      </button>
+    </div>
+
+    <!-- Carrito vacío -->
+    <div *ngIf="isEmpty" class="empty-cart">
+      <div class="empty-cart-icon">🛒</div>
+      <h2>Tu carrito está vacío</h2>
+      <p>¡Agrega algunos productos increíbles para comenzar a comprar!</p>
+      <button class="continue-shopping-btn" (click)="continueShopping()">
+        Continuar Comprando
+      </button>
+    </div>
+
+    <!-- Carrito con productos -->
+    <div *ngIf="!isEmpty" class="cart-content">
+      <!-- Mensaje de error -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Mensaje de envío gratuito -->
+      <div class="shipping-notice" *ngIf="!hasFreeShipping">
+        <span class="shipping-icon">🚚</span>
+        <span>¡Añade {{ amountForFreeShipping | currency }} más para conseguir <strong>envío gratuito</strong>!</span>
+      </div>
+      
+      <div class="shipping-notice success" *ngIf="hasFreeShipping">
+        <span class="shipping-icon">✅</span>
+        <span><strong>¡Felicidades!</strong> Tu pedido tiene envío gratuito.</span>
+      </div>
+
+      <div class="cart-layout">
+        <!-- Lista de productos -->
+        <div class="cart-items">
+          <div class="cart-items-header">
+            <h3>Productos</h3>
+          </div>
+          
+          <div class="cart-item" *ngFor="let item of cartItems">
+            <div class="item-image">
+              <img 
+                [src]="getProductImage(item)" 
+                [alt]="getProductName(item)"
+                (click)="viewProductDetails(getProduct(item)?.id || '')"
+              >
+            </div>
+            
+            <div class="item-details">
+              <h4 
+                class="item-name"
+                (click)="viewProductDetails(getProduct(item)?.id || '')"
+              >
+                {{ getProductName(item) }}
+              </h4>
+              
+              <div class="item-info">
+                <span *ngIf="item.selectedSize" class="item-size">
+                  Talla: {{ item.selectedSize }}
+                </span>
+                <span class="item-price">
+                  {{ item.unitPrice | currency }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="item-quantity">
+              <div class="quantity-controls">
+                <button 
+                  class="quantity-btn"
+                  (click)="decrementQuantity(item.id)"
+                  [disabled]="item.quantity <= 1"
+                >
+                  -
+                </button>
+                <span class="quantity">{{ item.quantity }}</span>
+                <button 
+                  class="quantity-btn"
+                  (click)="incrementQuantity(item.id)"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            
+            <div class="item-total">
+              <span class="total-price">{{ getItemTotal(item) | currency }}</span>
+            </div>
+            
+            <div class="item-actions">
+              <button 
+                class="remove-btn"
+                (click)="removeItem(item.id)"
+                title="Eliminar producto"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumen del pedido -->
+        <div class="cart-summary">
+          <div class="summary-header">
+            <h3>Resumen del Pedido</h3>
+          </div>
+          
+          <div class="summary-content">
+            <div class="summary-row">
+              <span>Subtotal ({{ totalItems }} {{ totalItems === 1 ? 'producto' : 'productos' }}):</span>
+              <span>{{ cartTotals.subtotal | currency }}</span>
+            </div>
+            
+            <div class="summary-row">
+              <span>Envío:</span>
+              <span>
+                <span *ngIf="cartTotals.shipping === 0" class="free-shipping">GRATIS</span>
+                <span *ngIf="cartTotals.shipping > 0">{{ cartTotals.shipping | currency }}</span>
+              </span>
+            </div>
+            
+            <div class="summary-row">
+              <span>IVA (21%):</span>
+              <span>{{ cartTotals.tax | currency }}</span>
+            </div>
+            
+            <div class="summary-divider"></div>
+            
+            <div class="summary-row total-row">
+              <span>Total:</span>
+              <span class="total-amount">{{ cartTotals.total | currency }}</span>
+            </div>
+            
+            <div class="summary-actions">
+              <button 
+                class="checkout-btn"
+                (click)="proceedToCheckout()"
+                [disabled]="isLoading"
+              >
+                <span *ngIf="!isLoading">Proceder al Pago</span>
+                <span *ngIf="isLoading">Procesando...</span>
+              </button>
+              
+              <button 
+                class="continue-shopping-btn secondary"
+                (click)="continueShopping()"
+              >
+                Continuar Comprando
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<app-footer></app-footer>

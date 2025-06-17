@@ -1,0 +1,120 @@
+.policy-page {
+  padding: 40px 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.policy-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+h1 {
+  font-size: 2.2rem;
+  margin-bottom: 15px;
+}
+
+.policy-content {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 30px;
+}
+
+.policy-section {
+  margin-bottom: 40px;
+}
+
+.policy-section h2 {
+  font-size: 1.5rem;
+  border-bottom: 2px solid #f5f5f5;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.policy-item {
+  margin-bottom: 25px;
+}
+
+.policy-item h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.policy-item p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+  color: #444;
+}
+
+.policy-item ul, 
+.policy-item ol {
+  margin-bottom: 15px;
+  padding-left: 20px;
+}
+
+.policy-item li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+  color: #444;
+}
+
+.policy-item.faq h3 {
+  background-color: #f9f9f9;
+  padding: 12px 15px;
+  border-radius: 5px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.policy-item.faq h3:hover {
+  background-color: #f1f1f1;
+}
+
+.contact-section {
+  background-color: #f7f7f7;
+  padding: 25px;
+  border-radius: 5px;
+  margin-top: 50px;
+}
+
+.contact-section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.contact-section p {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.contact-options {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.contact-options li {
+  padding: 10px;
+}
+
+@media (max-width: 768px) {
+  .policy-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .policy-content {
+    padding: 20px;
+  }
+}

@@ -1,0 +1,174 @@
+.register-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.logo {
+  margin-bottom: 30px;
+  cursor: pointer;
+}
+
+.logo img {
+  width: 100px;
+  height: auto;
+}
+
+.register-box {
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.register-subtitle {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.register-form {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+  text-align: left;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: #555;
+}
+
+.password-group {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin-top: 4px;
+}
+
+.checkbox-group label {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.checkbox-group a {
+  color: #000;
+  text-decoration: none;
+}
+
+.checkbox-group a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  color: #e63946;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.register-button {
+  width: 100%;
+  padding: 15px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.register-button:hover {
+  background-color: #333;
+}
+
+.login-link {
+  font-size: 0.9rem;
+  margin-top: 20px;
+}
+
+.login-link span {
+  color: #666;
+}
+
+.login-link a {
+  color: #000;
+  font-weight: 500;
+  margin-left: 5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+  .register-box {
+    max-width: 100%;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .form-row .form-group {
+    margin-bottom: 20px;
+  }
+}

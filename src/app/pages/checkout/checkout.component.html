@@ -1,0 +1,361 @@
+<app-header></app-header>
+
+<main class="checkout-page">
+  <div class="container">
+    <div class="checkout-header">
+      <h1>Finalizar Compra</h1>
+      <div class="step-indicator">
+        <div class="step" [class.active]="currentStep === 'shipping'" [class.completed]="currentStep !== 'shipping'">
+          <span class="step-number">1</span>
+          <span class="step-label">Envío</span>
+        </div>
+        <div class="step" [class.active]="currentStep === 'payment'" [class.completed]="currentStep === 'review'">
+          <span class="step-number">2</span>
+          <span class="step-label">Pago</span>
+        </div>
+        <div class="step" [class.active]="currentStep === 'review'">
+          <span class="step-number">3</span>
+          <span class="step-label">Revisar</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+      <!-- BOTONES DE DEBUG SÚPER DETALLADOS -->
+  <div class="debug-section" style="background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px;">
+    <p><strong>🔧 Debug Avanzado:</strong></p>
+    <button (click)="debugCompleteAddressFlow()" class="btn btn-info" style="margin: 5px;">
+      🔍 Debug Completo
+    </button>
+    <button (click)="forceMockAddresses()" class="btn btn-success" style="margin: 5px;">
+      🔧 Forzar Direcciones Mock
+    </button>
+    <button (click)="loadUserAddresses()" class="btn btn-warning" style="margin: 5px;">
+      🔄 Recargar Direcciones
+    </button>
+  </div>
+  
+    <div *ngIf="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
+
+    <div class="checkout-content">
+      <!-- PASO 1: INFORMACIÓN DE ENVÍO -->
+      <div *ngIf="currentStep === 'shipping'" class="checkout-step">
+        <div class="step-content">
+          <h2>Información de Envío</h2>
+          
+          <!-- Direcciones existentes -->
+          <div class="address-section" *ngIf="userAddresses.length > 0">
+            <h3>Seleccionar Dirección</h3>
+            <div class="address-grid">
+              <div 
+                *ngFor="let address of userAddresses" 
+                class="address-card"
+                [class.selected]="selectedAddressId === address.id && !isAddingNewAddress"
+                (click)="selectAddress(address.id)"
+              >
+                <div class="address-info">
+                  <h4>{{ address.name }}</h4>
+                  <p>{{ address.address }}</p>
+                  <p>{{ address.city }}, {{ address.state }} {{ address.zipCode }}</p>
+                  <p>{{ address.country }}</p>
+                  <span *ngIf="address.isDefault" class="default-badge">Predeterminada</span>
+                </div>
+                <div class="radio-check" *ngIf="selectedAddressId === address.id && !isAddingNewAddress">✓</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nueva dirección -->
+          <div class="new-address-section">
+            <button 
+              class="toggle-new-address-btn"
+              (click)="toggleNewAddress()"
+              [class.active]="isAddingNewAddress"
+            >
+              {{ isAddingNewAddress ? 'Cancelar' : '+ Añadir Nueva Dirección' }}
+            </button>
+
+            <div *ngIf="isAddingNewAddress" class="new-address-form">
+              <h3>Nueva Dirección</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Nombre de la dirección *</label>
+                  <input type="text" [(ngModel)]="newAddress.name" placeholder="Ej: Casa, Oficina">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Dirección *</label>
+                <input type="text" [(ngModel)]="newAddress.address" placeholder="Calle y número">
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Ciudad *</label>
+                  <input type="text" [(ngModel)]="newAddress.city" placeholder="Ciudad">
+                </div>
+                <div class="form-group">
+                  <label>Estado/Provincia</label>
+                  <input type="text" [(ngModel)]="newAddress.state" placeholder="Estado">
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Código Postal *</label>
+                  <input type="text" [(ngModel)]="newAddress.zipCode" placeholder="00000">
+                </div>
+                <div class="form-group">
+                  <label>País</label>
+                  <input type="text" [(ngModel)]="newAddress.country" placeholder="España">
+                </div>
+              </div>
+              
+              <div class="form-actions">
+                <button class="save-address-btn" (click)="saveNewAddress()">
+                  Guardar Dirección
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Método de Envío -->
+          <div class="shipping-method-section">
+            <h3>Método de Envío</h3>
+            <div class="shipping-options">
+              <div 
+                *ngFor="let method of shippingMethods"
+                class="shipping-option"
+                [class.selected]="selectedShippingMethod === method.id"
+                (click)="selectedShippingMethod = method.id"
+              >
+                <div class="option-info">
+                  <h4>{{ method.name }}</h4>
+                  <p>{{ method.description }}</p>
+                  <span class="delivery-time">{{ method.estimatedDays }}</span>
+                </div>
+                <div class="option-price">
+                  <span *ngIf="cartTotals.subtotal >= 100 && method.id === 'standard'" class="free">GRATIS</span>
+                  <span *ngIf="!(cartTotals.subtotal >= 100 && method.id === 'standard')">{{ method.price | currency }}</span>
+                </div>
+                <div class="radio-check" *ngIf="selectedShippingMethod === method.id">✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 2: INFORMACIÓN DE PAGO -->
+      <div *ngIf="currentStep === 'payment'" class="checkout-step">
+        <div class="step-content">
+          <h2>Información de Pago</h2>
+          
+          <div class="payment-methods">
+            <div 
+              *ngFor="let option of paymentOptions"
+              class="payment-option"
+              [class.selected]="selectedPaymentMethod === option.id"
+              (click)="selectedPaymentMethod = option.id"
+            >
+              <div class="option-info">
+                <h4>{{ option.name }}</h4>
+              </div>
+              <div class="radio-check" *ngIf="selectedPaymentMethod === option.id">✓</div>
+            </div>
+          </div>
+
+          <!-- Formulario de tarjeta -->
+          <div *ngIf="selectedPaymentMethod === 'credit_card' || selectedPaymentMethod === 'debit_card'" class="card-form">
+            <h3>Datos de la Tarjeta</h3>
+            
+            <div class="form-group">
+              <label>Número de Tarjeta *</label>
+              <input 
+                type="text" 
+                [(ngModel)]="paymentData.cardNumber" 
+                placeholder="1234 5678 9012 3456"
+                maxlength="19"
+              >
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>Mes *</label>
+                <select [(ngModel)]="paymentData.expiryMonth">
+                  <option value="">MM</option>
+                  <option *ngFor="let month of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="month">
+                    {{ month.toString().padStart(2, '0') }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Año *</label>
+                <select [(ngModel)]="paymentData.expiryYear">
+                  <option value="">YYYY</option>
+                  <option *ngFor="let year of [2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034]" [value]="year">
+                    {{ year }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>CVV *</label>
+                <input 
+                  type="text" 
+                  [(ngModel)]="paymentData.cvv" 
+                  placeholder="123"
+                  maxlength="4"
+                >
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Nombre del Titular *</label>
+              <input 
+                type="text" 
+                [(ngModel)]="paymentData.cardholderName" 
+                placeholder="Como aparece en la tarjeta"
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 3: REVISAR PEDIDO -->
+      <div *ngIf="currentStep === 'review'" class="checkout-step">
+        <div class="step-content">
+          <h2>Revisar Pedido</h2>
+          
+          <!-- Resumen de productos -->
+          <div class="order-summary">
+            <h3>Productos ({{ cartTotals.itemCount }})</h3>
+            <div class="summary-items">
+              <div *ngFor="let item of cartItems" class="summary-item">
+                <div class="item-image">
+                  <img [src]="getProductImage(item)" [alt]="getProductName(item)">
+                </div>
+                <div class="item-details">
+                  <h4>{{ getProductName(item) }}</h4>
+                  <p *ngIf="item.selectedSize">Talla: {{ item.selectedSize }}</p>
+                  <p>Cantidad: {{ item.quantity }}</p>
+                </div>
+                <div class="item-price">
+                  {{ (item.unitPrice * item.quantity) | currency }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dirección de envío -->
+          <div class="shipping-summary">
+            <h3>Dirección de Envío</h3>
+            <div class="address-summary" *ngIf="getSelectedAddress()">
+              <p><strong>{{ getSelectedAddress()?.name }}</strong></p>
+              <p>{{ getSelectedAddress()?.address }}</p>
+              <p>{{ getSelectedAddress()?.city }}, {{ getSelectedAddress()?.state }} {{ getSelectedAddress()?.zipCode }}</p>
+              <p>{{ getSelectedAddress()?.country }}</p>
+            </div>
+          </div>
+
+          <!-- Método de envío -->
+          <div class="method-summary">
+            <h3>Método de Envío</h3>
+            <div *ngIf="getSelectedShippingMethod()">
+              <p><strong>{{ getSelectedShippingMethod()?.name }}</strong></p>
+              <p>{{ getSelectedShippingMethod()?.description }}</p>
+            </div>
+          </div>
+
+          <!-- Total final -->
+          <div class="final-totals">
+            <div class="total-row">
+              <span>Subtotal:</span>
+              <span>{{ cartTotals.subtotal | currency }}</span>
+            </div>
+            <div class="total-row">
+              <span>Envío:</span>
+              <span>
+                <span *ngIf="calculateShippingCost() === 0" class="free">GRATIS</span>
+                <span *ngIf="calculateShippingCost() > 0">{{ calculateShippingCost() | currency }}</span>
+              </span>
+            </div>
+            <div class="total-row">
+              <span>IVA (21%):</span>
+              <span>{{ (cartTotals.subtotal * 0.21) | currency }}</span>
+            </div>
+            <div class="total-row final-total">
+              <span>Total:</span>
+              <span>{{ finalTotal | currency }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen lateral -->
+      <div class="checkout-sidebar">
+        <div class="order-totals">
+          <h3>Resumen del Pedido</h3>
+          
+          <div class="total-line">
+            <span>Productos ({{ cartTotals.itemCount }}):</span>
+            <span>{{ cartTotals.subtotal | currency }}</span>
+          </div>
+          
+          <div class="total-line">
+            <span>Envío:</span>
+            <span>
+              <span *ngIf="calculateShippingCost() === 0" class="free">GRATIS</span>
+              <span *ngIf="calculateShippingCost() > 0">{{ calculateShippingCost() | currency }}</span>
+            </span>
+          </div>
+          
+          <div class="total-line">
+            <span>IVA:</span>
+            <span>{{ (cartTotals.subtotal * 0.21) | currency }}</span>
+          </div>
+          
+          <div class="total-divider"></div>
+          
+          <div class="total-line final">
+            <span>Total:</span>
+            <span>{{ finalTotal | currency }}</span>
+          </div>
+          
+          <div class="checkout-actions">
+            <button 
+              *ngIf="currentStep !== 'shipping'"
+              class="back-btn"
+              (click)="previousStep()"
+            >
+              Volver
+            </button>
+            
+            <button 
+              class="continue-btn"
+              (click)="nextStep()"
+              [disabled]="isProcessingOrder"
+            >
+              <span *ngIf="currentStep !== 'review'">Continuar</span>
+              <span *ngIf="currentStep === 'review' && !isProcessingOrder">Realizar Pedido</span>
+              <span *ngIf="isProcessingOrder">Procesando...</span>
+            </button>
+            
+            <button 
+              class="cancel-btn"
+              (click)="cancelCheckout()"
+              [disabled]="isProcessingOrder"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<app-footer></app-footer>

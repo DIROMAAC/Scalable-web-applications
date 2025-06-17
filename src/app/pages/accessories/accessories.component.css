@@ -1,0 +1,92 @@
+.category-banner {
+  height: 300px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  color: white;
+  position: relative;
+  background-image: url('https://nacionfit.mx/cdn/shop/collections/hombre_banner.jpg?v=1725921175');
+  /* Puedes usar esta URL o una imagen de placeholder si no tienes la tuya */
+  /* background-image: url('https://images.unsplash.com/photo-1578763363228-6e8428de69b2?q=80&w=1406&auto=format&fit=crop'); */
+}
+
+.category-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+.category-banner .container {
+  position: relative;
+  z-index: 1;
+}
+
+.category-banner h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.category-banner p {
+  font-size: 1.2rem;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.product-filter-container {
+  display: flex;
+  margin: 40px 0;
+  gap: 30px;
+}
+
+.filter-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.product-grid {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+}
+
+.no-products {
+  width: 100%;
+  padding: 40px;
+  background-color: #f5f5f5;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.no-products p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+@media (max-width: 992px) {
+  .product-filter-container {
+    flex-direction: column;
+  }
+  
+  .filter-sidebar {
+    width: 100%;
+  }
+  
+  .category-banner {
+    height: 200px;
+  }
+  
+  .category-banner h1 {
+    font-size: 2rem;
+  }
+}

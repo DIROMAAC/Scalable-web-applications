@@ -1,0 +1,35 @@
+<app-header (searchEvent)="onSearch($event)"></app-header>
+
+<div class="category-banner">
+  <div class="container">
+    <h1>COLECCIÓN PARA MUJER</h1>
+    <p>Descubre nuestra línea exclusiva de ropa para mujer</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="product-filter-container">
+    <div class="filter-sidebar">
+      <app-controls 
+        [showCategoryFilter]="false"
+        (orderByNameEvent)="onOrderByName()"
+        (orderByPriceEvent)="onOrderByPrice($event)"
+        (filterByPriceRangeEvent)="onFilterByPriceRange($event)"
+      ></app-controls>
+    </div>
+    
+    <div class="product-grid">
+      <div *ngIf="(productService.filteredProducts$ | async)?.length === 0" class="no-products">
+        <p>No se encontraron productos que coincidan con los criterios de búsqueda.</p>
+      </div>
+      
+      <app-product-card 
+        *ngFor="let product of (productService.filteredProducts$ | async) ?? []"
+        [product]="product"
+        (onDetailsEvent)="onProductDetails($event)"
+      ></app-product-card>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

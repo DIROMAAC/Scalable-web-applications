@@ -1,0 +1,46 @@
+<div class="controls-container">
+  <div class="filter-section" *ngIf="showCategoryFilter">
+    <h3>Categorías</h3>
+    <div class="filter-options">
+      <button 
+        [ngClass]="{'active': activeCategory === 'all'}"
+        (click)="filterByCategory('all')">Todos</button>
+      <button 
+        [ngClass]="{'active': activeCategory === 'men'}"
+        (click)="filterByCategory('men')">Hombres</button>
+      <button 
+        [ngClass]="{'active': activeCategory === 'women'}"
+        (click)="filterByCategory('women')">Mujeres</button>
+      <button 
+        [ngClass]="{'active': activeCategory === 'accessories'}"
+        (click)="filterByCategory('accessories')">Accesorios</button>
+    </div>
+  </div>
+  
+  <div class="filter-section">
+    <h3>Ordenar por</h3>
+    <div class="filter-options">
+      <button 
+        [ngClass]="{'active': activeSorting === 'name'}"
+        (click)="orderByName()">Nombre</button>
+      <button 
+        [ngClass]="{'active': activeSorting === 'price-asc'}"
+        (click)="orderByPrice(true)">Precio (menor a mayor)</button>
+      <button 
+        [ngClass]="{'active': activeSorting === 'price-desc'}"
+        (click)="orderByPrice(false)">Precio (mayor a menor)</button>
+    </div>
+  </div>
+  
+  <div class="filter-section">
+    <h3>Rango de precio</h3>
+    <div class="filter-options">
+      <button 
+        *ngFor="let range of priceRanges"
+        [ngClass]="{'active': selectedPriceRange === range}"
+        (click)="filterByPriceRange(range)">
+        {{range.label}}
+      </button>
+    </div>
+  </div>
+</div>

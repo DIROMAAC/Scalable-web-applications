@@ -1,0 +1,86 @@
+<!-- src/app/components/header/header.component.html -->
+<header>
+  <div class="top-bar">
+    <div class="container">
+      <span class="shipping-notice">ENVÍO GRATIS EN PEDIDOS SUPERIORES A $100</span>
+      <div class="top-right">
+        <a href="#">Ayuda</a>
+        <a href="#">Contacto</a>
+        <a *ngIf="isAuthenticated" (click)="logout()" style="cursor: pointer;">Cerrar Sesión</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-header">
+    <div class="container">
+      <div class="logo" (click)="navigateTo('/')">
+        GYMSTYLE
+      </div>
+      
+      <div class="menu-toggle" (click)="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      
+      <nav [ngClass]="{'open': isMenuOpen}">
+        <a routerLink="/products/men" routerLinkActive="active">HOMBRE</a>
+        <a routerLink="/products/women" routerLinkActive="active">MUJER</a>
+        <a routerLink="/products/accessories" routerLinkActive="active">ACCESORIOS</a>
+        <a routerLink="/cart" routerLinkActive="active">CARRITO ({{ cartItemCount }})</a>
+      </nav>
+      
+      <div class="header-actions">
+        <div class="search-container">
+          <input 
+            type="text" 
+            #searchInput
+            [(ngModel)]="searchTerm"
+            placeholder="Buscar productos..." 
+            (input)="onSearchInput()"
+            (keyup.enter)="onSearch(searchInput.value)"
+          >
+          <button class="search-icon" (click)="onSearch(searchInput.value)">
+            <img src="https://img.icons8.com/?size=100&id=DZe3wFKTc8IK&format=png&color=000000" alt="Buscar" class="search-icon-img">
+          </button>
+          <button *ngIf="searchTerm" class="clear-icon" (click)="clearSearch()">✕</button>
+        </div>
+        
+        <div class="header-icons">
+          <!-- Icono de admin - solo visible para administradores -->
+          <a *ngIf="isAdmin" routerLink="/admin/products" class="icon-link admin-link" title="Panel de Administración">
+            <img src="https://img.icons8.com/?size=100&id=83241&format=png&color=000000" alt="Admin" class="header-icon">
+          </a>
+          
+          <!-- Icono de login/perfil -->
+          <a *ngIf="!isAuthenticated" routerLink="/login" class="icon-link">
+            <img src="https://img.icons8.com/?size=100&id=84020&format=png&color=000000" alt="Usuario" class="header-icon">
+          </a>
+          <a *ngIf="isAuthenticated" routerLink="/profile" class="icon-link" title="Mi Perfil">
+            <img src="https://img.icons8.com/?size=100&id=84020&format=png&color=000000" alt="Perfil" class="header-icon">
+          </a>
+          
+          <!-- Carrito de compras -->
+          <a routerLink="/cart" class="icon-link">
+            <img src="https://img.icons8.com/?size=100&id=On3brTbr5kbp&format=png&color=000000" alt="Carrito" class="header-icon cart-icon">
+            <span class="cart-count" *ngIf="cartItemCount > 0">{{cartItemCount}}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Banner Hero -->
+<div class="hero-banner">
+  <div class="container">
+    <div class="banner-content">
+      <h1>RENDIMIENTO Y ESTILO</h1>
+      <p>Descubre nuestra nueva colección para elevar tu entrenamiento</p>
+      <div class="cta-buttons">
+        <a routerLink="/products/men" class="cta-button">COMPRAR HOMBRE</a>
+        <a routerLink="/products/women" class="cta-button">COMPRAR MUJER</a>
+      </div>
+    </div>
+  </div>
+</div>

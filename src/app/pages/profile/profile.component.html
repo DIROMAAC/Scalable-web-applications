@@ -1,0 +1,350 @@
+<app-header></app-header>
+
+<main class="profile-page">
+  <div class="container">
+    <!-- Header del perfil con botón de logout -->
+    <div class="profile-header">
+      <div class="user-info-header">
+        <div class="avatar">
+          <span class="initials">{{ authService.currentUser?.initials || 'U' }}</span>
+        </div>
+        <div class="user-details">
+          <h1>{{ authService.currentUser?.fullName || 'Mi Cuenta' }}</h1>
+          <p>{{ authService.currentUser?.email }}</p>
+        </div>
+      </div>
+    
+    <div class="profile-content">
+      <!-- Sidebar de navegación -->
+      <div class="profile-sidebar">
+        <nav class="profile-nav">
+          <button 
+            class="nav-item" 
+            [class.active]="activeTab === 'info'"
+            (click)="setActiveTab('info')"
+          >
+            Información Personal
+          </button>
+          <button 
+            class="nav-item" 
+            [class.active]="activeTab === 'addresses'"
+            (click)="setActiveTab('addresses')"
+          >
+            Mis Direcciones
+          </button>
+          <button 
+            class="nav-item" 
+            [class.active]="activeTab === 'payments'"
+            (click)="setActiveTab('payments')"
+          >
+            Métodos de Pago
+          </button>
+          <button 
+            class="nav-item" 
+            [class.active]="activeTab === 'preferences'"
+            (click)="setActiveTab('preferences')"
+          >
+            Preferencias
+          </button>
+          <button class="nav-item" (click)="goToOrders()">
+            Mis Pedidos
+          </button>
+        </nav>
+      </div>
+      
+      <!-- Contenido principal -->
+      <div class="profile-main">
+        <!-- Mensajes de estado -->
+        <div *ngIf="successMessage" class="success-message">
+          {{ successMessage }}
+        </div>
+        
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+        
+        <!-- Loading indicator -->
+        <div *ngIf="loading" class="loading-indicator">
+          Cargando...
+        </div>
+        
+        <!-- Información Personal -->
+        <div *ngIf="activeTab === 'info'" class="tab-content">
+          <div class="section-header">
+            <h2>Información Personal</h2>
+            <button 
+              *ngIf="!editingPersonalInfo" 
+              class="edit-button"
+              (click)="toggleEditPersonalInfo()"
+            >
+              Editar
+            </button>
+          </div>
+          
+          <div *ngIf="!editingPersonalInfo" class="info-display">
+            <div class="info-row">
+              <label>Nombre:</label>
+              <span>{{ user.firstName + ' ' + user.lastName || 'No especificado' }}</span>
+            </div>
+            <div class="info-row">
+              <label>Email:</label>
+              <span>{{ user.email || 'No especificado' }}</span>
+            </div>
+            <div class="info-row">
+              <label>Teléfono:</label>
+              <span>{{ user.phone || 'No especificado' }}</span>
+            </div>
+            <div class="info-row">
+              <label>Fecha de Nacimiento:</label>
+              <span>{{ user.birthDate || 'No especificado' }}</span>
+            </div>
+          </div>
+          
+          <div *ngIf="editingPersonalInfo" class="edit-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" [(ngModel)]="user.firstName" placeholder="Nombre">
+              </div>
+              <div class="form-group">
+                <label>Apellido</label>
+                <input type="text" [(ngModel)]="user.lastName" placeholder="Apellido">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" [(ngModel)]="user.email" placeholder="Email" readonly>
+            </div>
+            
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input type="tel" [(ngModel)]="user.phone" placeholder="Teléfono">
+            </div>
+            
+            <div class="form-group">
+              <label>Fecha de Nacimiento</label>
+              <input type="date" [(ngModel)]="user.birthDate">
+            </div>
+            
+            <div class="form-actions">
+              <button class="save-button" (click)="savePersonalInfo()">Guardar</button>
+              <button class="cancel-button" (click)="toggleEditPersonalInfo()">Cancelar</button>
+            </div>
+          </div>
+          
+          <!-- Sección de cambio de contraseña -->
+          <div class="password-section">
+            <h3>Contraseña</h3>
+            <button 
+              *ngIf="!changePasswordMode" 
+              class="change-password-button"
+              (click)="toggleChangePassword()"
+            >
+              Cambiar Contraseña
+            </button>
+            
+            <div *ngIf="changePasswordMode" class="password-form">
+              <div class="form-group">
+                <label>Contraseña Actual</label>
+                <input 
+                  type="password" 
+                  [(ngModel)]="passwordData.currentPassword" 
+                  placeholder="Contraseña actual"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label>Nueva Contraseña</label>
+                <input 
+                  type="password" 
+                  [(ngModel)]="passwordData.newPassword" 
+                  placeholder="Nueva contraseña"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label>Confirmar Nueva Contraseña</label>
+                <input 
+                  type="password" 
+                  [(ngModel)]="passwordData.confirmPassword" 
+                  placeholder="Confirmar nueva contraseña"
+                >
+              </div>
+              
+              <div class="form-actions">
+                <button class="save-button" (click)="saveNewPassword()">Cambiar Contraseña</button>
+                <button class="cancel-button" (click)="toggleChangePassword()">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Direcciones -->
+        <div *ngIf="activeTab === 'addresses'" class="tab-content">
+          <div class="section-header">
+            <h2>Mis Direcciones</h2>
+            <button class="add-button" (click)="startAddNewAddress()">
+              Añadir Nueva Dirección
+            </button>
+          </div>
+          
+          <div *ngIf="addresses.length === 0" class="empty-state">
+            <p>No tienes direcciones guardadas</p>
+          </div>
+          
+          <div *ngFor="let address of addresses" class="address-card">
+            <div class="address-info">
+              <div class="address-name">{{ address.name }}</div>
+              <div class="address-details">
+                {{ address.address }}<br>
+                {{ address.city }}, {{ address.state }} {{ address.zipCode }}<br>
+                {{ address.country }}
+              </div>
+              <div *ngIf="address.isDefault" class="default-badge">Predeterminada</div>
+            </div>
+            <div class="address-actions">
+              <button (click)="editAddress(address)">Editar</button>
+              <button (click)="setDefaultAddress(address.id)" *ngIf="!address.isDefault">
+                Predeterminada
+              </button>
+              <button (click)="deleteAddress(address.id)" class="delete-btn">Eliminar</button>
+            </div>
+          </div>
+          
+          <!-- Formulario para nueva dirección -->
+          <div *ngIf="addingNewAddress" class="address-form">
+            <h3>Añadir Nueva Dirección</h3>
+            <div class="form-group">
+              <label>Nombre de la dirección</label>
+              <input type="text" [(ngModel)]="newAddress.name" placeholder="Ej: Casa, Oficina">
+            </div>
+            <div class="form-group">
+              <label>Dirección</label>
+              <input type="text" [(ngModel)]="newAddress.address" placeholder="Calle y número">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ciudad</label>
+                <input type="text" [(ngModel)]="newAddress.city" placeholder="Ciudad">
+              </div>
+              <div class="form-group">
+                <label>Estado/Provincia</label>
+                <input type="text" [(ngModel)]="newAddress.state" placeholder="Estado">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Código Postal</label>
+                <input type="text" [(ngModel)]="newAddress.zipCode" placeholder="Código postal">
+              </div>
+              <div class="form-group">
+                <label>País</label>
+                <input type="text" [(ngModel)]="newAddress.country" placeholder="País">
+              </div>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="defaultAddress" [(ngModel)]="newAddress.isDefault">
+              <label for="defaultAddress">Establecer como dirección predeterminada</label>
+            </div>
+            <div class="form-actions">
+              <button class="save-button" (click)="saveNewAddress()">Guardar Dirección</button>
+              <button class="cancel-button" (click)="cancelNewAddress()">Cancelar</button>
+            </div>
+          </div>
+          
+          <!-- Formulario para editar dirección -->
+          <div *ngIf="editingAddress" class="address-form">
+            <h3>Editar Dirección</h3>
+            <div class="form-group">
+              <label>Nombre de la dirección</label>
+              <input type="text" [(ngModel)]="editingAddress.name" placeholder="Ej: Casa, Oficina">
+            </div>
+            <div class="form-group">
+              <label>Dirección</label>
+              <input type="text" [(ngModel)]="editingAddress.address" placeholder="Calle y número">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ciudad</label>
+                <input type="text" [(ngModel)]="editingAddress.city" placeholder="Ciudad">
+              </div>
+              <div class="form-group">
+                <label>Estado/Provincia</label>
+                <input type="text" [(ngModel)]="editingAddress.state" placeholder="Estado">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Código Postal</label>
+                <input type="text" [(ngModel)]="editingAddress.zipCode" placeholder="Código postal">
+              </div>
+              <div class="form-group">
+                <label>País</label>
+                <input type="text" [(ngModel)]="editingAddress.country" placeholder="País">
+              </div>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="editDefaultAddress" [(ngModel)]="editingAddress.isDefault">
+              <label for="editDefaultAddress">Establecer como dirección predeterminada</label>
+            </div>
+            <div class="form-actions">
+              <button class="save-button" (click)="saveAddress()">Actualizar Dirección</button>
+              <button class="cancel-button" (click)="cancelEditAddress()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Métodos de Pago -->
+        <div *ngIf="activeTab === 'payments'" class="tab-content">
+          <div class="section-header">
+            <h2>Métodos de Pago</h2>
+          </div>
+          
+          <div *ngIf="paymentMethods.length === 0" class="empty-state">
+            <p>No tienes métodos de pago guardados</p>
+          </div>
+          
+          <div *ngFor="let method of paymentMethods" class="payment-card">
+            <div class="payment-info">
+              <div class="card-type">{{ method.type }}</div>
+              <div class="card-number">**** **** **** {{ method.last4 }}</div>
+              <div class="card-expiry">{{ method.expiryMonth }}/{{ method.expiryYear }}</div>
+              <div *ngIf="method.isDefault" class="default-badge">Predeterminado</div>
+            </div>
+            <div class="payment-actions">
+              <button (click)="setDefaultPayment(method.id)" *ngIf="!method.isDefault">
+                Predeterminado
+              </button>
+              <button (click)="deletePaymentMethod(method.id)" class="delete-btn">Eliminar</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Preferencias -->
+        <div *ngIf="activeTab === 'preferences'" class="tab-content">
+          <div class="section-header">
+            <h2>Preferencias</h2>
+          </div>
+          
+          <div class="preferences-section">
+            <h3>Notificaciones</h3>
+            <div class="checkbox-group">
+              <input type="checkbox" id="emailMarketing">
+              <label for="emailMarketing">Recibir ofertas y promociones por email</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="orderUpdates" checked>
+              <label for="orderUpdates">Actualizaciones de pedidos</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="newArrivals">
+              <label for="newArrivals">Notificaciones de nuevos productos</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<app-footer></app-footer>

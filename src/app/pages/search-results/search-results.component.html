@@ -1,0 +1,37 @@
+<app-header (searchEvent)="onSearch($event)"></app-header>
+
+<div class="search-banner">
+  <div class="container">
+    <h1>Resultados de búsqueda</h1>
+    <p *ngIf="searchTerm">Mostrando resultados para: "{{ searchTerm }}"</p>
+    <p *ngIf="!searchTerm">Todos los productos</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="product-filter-container">
+    <div class="filter-sidebar">
+      <app-controls 
+        (filterByCategoryEvent)="onFilterByCategory($event)"
+        (orderByNameEvent)="onOrderByName()"
+        (orderByPriceEvent)="onOrderByPrice($event)"
+        (filterByPriceRangeEvent)="onFilterByPriceRange($event)"
+      ></app-controls>
+    </div>
+    
+    <div class="product-grid">
+      <div *ngIf="(productService.filteredProducts$ | async)?.length === 0" class="no-products">
+        <p>No se encontraron productos que coincidan con "{{ searchTerm }}".</p>
+        <button (click)="onSearch('')" class="clear-search-btn">Ver todos los productos</button>
+      </div>
+      
+      <app-product-card 
+        *ngFor="let product of (productService.filteredProducts$ | async) ?? []"
+        [product]="product"
+        (onDetailsEvent)="onProductDetails($event)"
+      ></app-product-card>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

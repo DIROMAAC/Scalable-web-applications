@@ -1,0 +1,108 @@
+<app-header (searchEvent)="onSearch($event)"></app-header>
+
+<!-- Mensajes -->
+<div *ngIf="successMessage" class="success-message">
+  {{ successMessage }}
+</div>
+
+<div *ngIf="errorMessage" class="error-message">
+  {{ errorMessage }}
+</div>
+
+<main class="product-details" *ngIf="product">
+  <div class="product-images">
+    <div class="main-image">
+      <img [src]="product.images[currentImageIndex]" [alt]="product.name">
+    </div>
+    <div class="thumbnail-container">
+      <img 
+        *ngFor="let img of product.images; let i = index" 
+        [src]="img" 
+        [alt]="'Thumbnail ' + i"
+        [class.active]="i === currentImageIndex"
+        (click)="currentImageIndex = i"
+      >
+    </div>
+  </div>
+  
+  <div class="product-info">
+    <h1>{{product.name}}</h1>
+    
+    <div class="price">
+      <span *ngIf="product.salePrice" class="original-price">{{product.price | currency}}</span>
+      <span class="current-price">{{(product.salePrice || product.price) | currency}}</span>
+    </div>
+    
+    <div class="rating">
+      {{product.rating}} ★ ({{product.reviewCount}} reseñas)
+    </div>
+    
+    <p class="description">{{product.description}}</p>
+    
+    <!-- Opciones para productos de ropa -->
+    <div class="options" *ngIf="productService.isClothingProduct(product)">
+      <div class="sizes">
+        <h3>Tallas</h3>
+        <div class="size-buttons">
+          <button 
+            *ngFor="let size of product.sizes" 
+            [class.selected]="size === selectedSize"
+            (click)="selectedSize = size"
+          >
+            {{size}}
+          </button>
+        </div>
+      </div>
+      
+      <div class="fit">
+        <h3>Tipo de ajuste</h3>
+        <p>{{product.fit}}</p>
+      </div>
+    </div>
+    
+    <!-- Opciones para accesorios -->
+    <div class="options" *ngIf="productService.isAccessoryProduct(product)">
+      <div *ngIf="product.dimensions">
+        <h3>Dimensiones</h3>
+        <p>{{product.dimensions}}</p>
+      </div>
+      
+      <div *ngIf="product.adjustable !== undefined">
+        <h3>Ajustable</h3>
+        <p>{{product.adjustable ? 'Sí' : 'No'}}</p>
+      </div>
+    </div>
+
+    <!-- Selección de cantidad -->
+    <div class="quantity-section">
+      <h3>Cantidad</h3>
+      <div class="quantity-controls">
+        <button 
+          class="quantity-btn"
+          (click)="decrementQuantity()"
+          [disabled]="quantity <= 1"
+        >
+          -
+        </button>
+        <span class="quantity">{{ quantity }}</span>
+        <button 
+          class="quantity-btn"
+          (click)="incrementQuantity()"
+        >
+          +
+        </button>
+      </div>
+    </div>
+    
+    <!-- Botones de acción -->
+    <div class="action-buttons">
+      <button class="add-to-cart" [disabled]="!product.inStock" (click)="addToCart()">{{product.inStock ? 'Añadir al carrito' : 'Agotado'}}</button>
+      
+      <button *ngIf="isInCart" class="go-to-cart"(click)="goToCart()">Ver en Carrito</button>
+    </div>
+    
+    <button class="back-button" (click)="goBack()">Volver</button>
+  </div>
+</main>
+
+<app-footer></app-footer>

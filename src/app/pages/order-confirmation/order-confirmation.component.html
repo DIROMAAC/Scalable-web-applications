@@ -1,0 +1,98 @@
+<app-header></app-header>
+
+<main class="confirmation-page">
+  <div class="container">
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Procesando tu pedido...</p>
+    </div>
+
+    <!-- Success Content -->
+    <div *ngIf="!isLoading" class="confirmation-content">
+      <div class="success-icon">
+        <div class="checkmark">✓</div>
+      </div>
+      
+      <h1>¡Pedido Confirmado!</h1>
+      <p class="success-message">
+        Tu pedido ha sido procesado exitosamente. Recibirás un email de confirmación en breve.
+      </p>
+      
+      <div class="order-details">
+        <h2>Detalles del Pedido</h2>
+        <div class="detail-row">
+          <span>Número de Orden:</span>
+          <strong>{{ orderNumber }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Fecha:</span>
+          <strong>{{ currentDate | date:'dd/MM/yyyy HH:mm' }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Estado:</span>
+          <span class="status pending">Procesando</span>
+        </div>
+        <div class="detail-row">
+          <span>Tiempo estimado:</span>
+          <strong>3-5 días laborables</strong>
+        </div>
+      </div>
+      
+      <div class="next-steps">
+        <h3>¿Qué sigue?</h3>
+        <div class="steps-grid">
+          <div class="step">
+            <div class="step-icon">📧</div>
+            <h4>Confirmación por Email</h4>
+            <p>Recibirás un email con todos los detalles de tu pedido</p>
+          </div>
+          <div class="step">
+            <div class="step-icon">📦</div>
+            <h4>Preparación</h4>
+            <p>Tu pedido será procesado y empacado en 1-2 días laborables</p>
+          </div>
+          <div class="step">
+            <div class="step-icon">🚚</div>
+            <h4>Envío</h4>
+            <p>Te notificaremos cuando tu pedido sea enviado con el número de tracking</p>
+          </div>
+          <div class="step">
+            <div class="step-icon">🏠</div>
+            <h4>Entrega</h4>
+            <p>Recibirás tu pedido en la dirección especificada</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="important-info">
+        <div class="info-card">
+          <h4>📱 Rastrea tu pedido</h4>
+          <p>Usa el número de orden <strong>{{ orderNumber }}</strong> para rastrear tu envío en cualquier momento.</p>
+        </div>
+        <div class="info-card">
+          <h4>💬 ¿Necesitas ayuda?</h4>
+          <p>Contáctanos si tienes alguna pregunta sobre tu pedido.</p>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn btn-primary" (click)="goToProducts()">
+          <span class="btn-icon">🛍️</span>
+          Seguir Comprando
+        </button>
+        <button class="btn btn-secondary" (click)="goToOrders()">
+          <span class="btn-icon">📋</span>
+          Ver Mis Pedidos
+        </button>
+        <button class="btn btn-outline" (click)="goToHome()">
+          <span class="btn-icon">🏠</span>
+          Ir al Inicio
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<app-footer></app-footer>

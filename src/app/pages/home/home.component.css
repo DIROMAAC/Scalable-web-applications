@@ -1,0 +1,246 @@
+.section-title {
+  text-align: center;
+  margin: 60px 0 30px;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* Categorías destacadas */
+.featured-categories {
+  padding: 40px 0;
+}
+
+.category-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.category-card {
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s;
+  height: 800px;
+}
+
+.category-card:hover {
+  transform: translateY(-10px);
+}
+
+.category-image {
+  height: 700px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.category-image:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.2);
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.category-card:hover .category-image:after {
+  background: rgba(0,0,0,0.1);
+}
+
+.category-image.men {
+  background-image: url('https://www.gymshark.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fwl6q2in9o7k3%2F1m6WYQHxIkqQriMXhjadRU%2Fa172b5241f79a4f77ec7114935e673cf%2FHeadless_Cards_-_22455007.png&w=1920&q=85');
+}
+
+.category-image.women {
+  background-image: url('https://www.gymshark.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fwl6q2in9o7k3%2F2bdjSHmE6yxx29cVehXBoN%2Ff1d0f854e50d612d8710ca35e1a19bb5%2FHeadless_Cards_-_22838170.png&w=1920&q=85');
+}
+
+.category-image.accessories {
+  background-image: url('https://www.gymshark.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fwl6q2in9o7k3%2F7mILIOI5H2sJO0HeML77Pq%2Fd6e98fa29e2e096d6f6fb683492548dd%2FHeadless_Cards_-_22928834.png&w=1920&q=85');
+}
+
+.category-card h3 {
+  font-size: 1.5rem;
+  margin: 15px 0 10px;
+}
+
+.category-link {
+  color: #e63946;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+.category-link:after {
+  content: '→';
+  margin-left: 5px;
+  transition: margin 0.3s;
+}
+
+.category-card:hover .category-link:after {
+  margin-left: 10px;
+}
+
+/* Productos grid */
+.featured-products {
+  padding: 40px 0 80px;
+  background-color: #f8f9fa;
+  height: 1300px;
+}
+
+.products-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+/* Banner promocional */
+.promo-banner {
+  background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://www.youngla.com/cdn/shop/files/Banner_1_1f950f09-67ce-4f5a-bf9b-d2673c6c4d2a.jpg?v=1747337463&width=2000');
+  background-size: cover;
+  background-position: center;
+  padding: 80px 0;
+  text-align: center;
+  color: white;
+}
+
+.promo-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.promo-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.promo-content p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.promo-content .cta-button {
+  display: inline-block;
+  padding: 12px 30px;
+  background-color: #e63946;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.promo-content .cta-button:hover {
+  background-color: #c1121f;
+}
+
+.featured-products {
+  padding: 40px 0 80px;
+  background-color: #f8f9fa;
+  min-height: 800px; /* En lugar de height fija para adaptarse a contenido */
+}
+
+.products-container {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+/* Filtros laterales */
+.filters-sidebar {
+  margin-left: 100px;
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.filter-category,
+.filter-sort,
+.filter-price {
+  margin-bottom: 25px;
+}
+
+.filters-sidebar h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-options button {
+  text-align: left;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.filter-options button:hover {
+  background-color: #f0f0f0;
+}
+
+.filter-options button.active {
+  background-color: #000;
+  color: white;
+  border-color: #000;
+}
+
+/* Actualización de la cuadrícula de productos */
+.products-grid-container {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .products-grid-container app-product-card {
+    flex: 0 0 calc(50% - 20px); /* 2 productos por fila */
+  }
+}
+
+@media (max-width: 992px) {
+  .products-container {
+    flex-direction: column;
+  }
+  
+  .filters-sidebar {
+    width: 100%;
+  }
+  
+  .filter-options {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .filter-options button {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .products-grid-container app-product-card {
+    flex: 0 0 100%; /* 1 producto por fila */
+  }
+}

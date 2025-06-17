@@ -1,0 +1,169 @@
+<app-header></app-header>
+
+<main class="admin-page">
+  <div class="container">
+    <div class="admin-header">
+      <h1>Panel de Administración - Productos</h1>
+      <div class="admin-nav">
+        <button class="nav-button active">Productos</button>
+        <button class="nav-button" (click)="goToOrderManagement()">Pedidos</button>
+      </div>
+    </div>
+
+    <div class="admin-actions">
+      <button class="add-product-btn" (click)="startAddProduct()" *ngIf="!isAddingProduct && !editingProduct">
+        + Añadir Nuevo Producto
+      </button>
+    </div>
+
+    <!-- Formulario de producto -->
+    <div *ngIf="isAddingProduct || editingProduct" class="product-form-card">
+      <div class="form-header">
+        <h2>{{ isAddingProduct ? 'Añadir Nuevo Producto' : 'Editar Producto' }}</h2>
+        <button class="close-btn" (click)="cancelEdit()">×</button>
+      </div>
+
+      <form class="product-form" (ngSubmit)="saveProduct()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Nombre del Producto *</label>
+            <input type="text" id="name" [(ngModel)]="productForm.name" name="name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="type">Tipo de Producto *</label>
+            <select id="type" [(ngModel)]="productForm.type" name="type" required>
+              <option value="clothing">Ropa</option>
+              <option value="accessory">Accesorio</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="price">Precio *</label>
+            <input type="number" id="price" [(ngModel)]="productForm.price" name="price" min="0" step="0.01" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="salePrice">Precio de Oferta</label>
+            <input type="number" id="salePrice" [(ngModel)]="productForm.salePrice" name="salePrice" min="0" step="0.01">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Descripción *</label>
+          <textarea id="description" [(ngModel)]="productForm.description" name="description" rows="3" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Imágenes del Producto *</label>
+          <div *ngFor="let image of productForm.images; let i = index" class="image-input-row">
+            <input type="url" [(ngModel)]="productForm.images[i]" [name]="'image' + i" placeholder="URL de la imagen">
+            <button type="button" class="remove-image-btn" (click)="removeImageField(i)" *ngIf="productForm.images.length > 1">×</button>
+          </div>
+          <button type="button" class="add-image-btn" (click)="addImageField()">+ Añadir Imagen</button>
+        </div>
+
+        <!-- Campos específicos para ropa -->
+        <div *ngIf="productForm.type === 'clothing'" class="clothing-fields">
+          <h3>Detalles de Ropa</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="gender">Género</label>
+              <select id="gender" [(ngModel)]="productForm.gender" name="gender">
+                <option value="men">Hombre</option>
+                <option value="women">Mujer</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="fit">Tipo de Ajuste</label>
+              <select id="fit" [(ngModel)]="productForm.fit" name="fit">
+                <option value="Regular">Regular</option>
+                <option value="Slim">Slim</option>
+                <option value="Compression">Compression</option>
+                <option value="Oversized">Oversized</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campos específicos para accesorios -->
+        <div *ngIf="productForm.type === 'accessory'" class="accessory-fields">
+          <h3>Detalles de Accesorio</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dimensions">Dimensiones</label>
+              <input type="text" id="dimensions" [(ngModel)]="productForm.dimensions" name="dimensions" placeholder="Ej: 26cm x 7cm, S-XL, etc.">
+            </div>
+            
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" [(ngModel)]="productForm.adjustable" name="adjustable">
+                ¿Es ajustable?
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rating">Calificación</label>
+            <input type="number" id="rating" [(ngModel)]="productForm.rating" name="rating" min="1" max="5" step="0.1">
+          </div>
+          
+          <div class="form-group">
+            <label for="reviewCount">Número de Reseñas</label>
+            <input type="number" id="reviewCount" [(ngModel)]="productForm.reviewCount" name="reviewCount" min="0">
+          </div>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="productForm.inStock" name="inStock">
+            En Stock
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="save-btn">{{ isAddingProduct ? 'Añadir Producto' : 'Guardar Cambios' }}</button>
+          <button type="button" class="cancel-btn" (click)="cancelEdit()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Lista de productos -->
+    <div *ngIf="!isAddingProduct && !editingProduct" class="products-list">
+      <h2>Productos Existentes ({{ products.length }})</h2>
+      
+      <div class="products-grid">
+        <div *ngFor="let product of products" class="product-card-admin">
+          <div class="product-image">
+            <img [src]="product.images[0]" [alt]="product.name">
+            <div class="product-status" [class.out-of-stock]="!product.inStock">
+              {{ product.inStock ? 'En Stock' : 'Agotado' }}
+            </div>
+          </div>
+          
+          <div class="product-details">
+            <h3>{{ product.name }}</h3>
+            <p class="product-price">
+              <span *ngIf="product.salePrice" class="original-price">{{ product.price | currency }}</span>
+              <span class="current-price">{{ (product.salePrice || product.price) | currency }}</span>
+            </p>
+            <p class="product-type">{{ productService.isClothingProduct(product) ? 'Ropa' : 'Accesorio' }}</p>
+            <p class="product-rating">★ {{ product.rating }} ({{ product.reviewCount }} reseñas)</p>
+          </div>
+          
+          <div class="product-actions">
+            <button class="edit-btn" (click)="startEditProduct(product)">Editar</button>
+            <button class="delete-btn" (click)="deleteProduct(product.id)">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<app-footer></app-footer>

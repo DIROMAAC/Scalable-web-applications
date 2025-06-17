@@ -1,0 +1,372 @@
+/* order-confirmation.component.css */
+
+.confirmation-page {
+  min-height: 80vh;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Loading State */
+.loading-container {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Success Content */
+.confirmation-content {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-icon {
+  margin-bottom: 2rem;
+}
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+  color: white;
+  font-size: 3rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  animation: checkmarkPulse 0.6s ease-out;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+@keyframes checkmarkPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.success-message {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Order Details */
+.order-details {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 2rem 0;
+  text-align: left;
+  border: 1px solid #dee2e6;
+}
+
+.order-details h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.4rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.detail-row span:first-child {
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-row strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.status {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status.pending {
+  background: linear-gradient(45deg, #fff3cd, #ffeaa7);
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+/* Next Steps */
+.next-steps {
+  margin: 3rem 0;
+  text-align: left;
+}
+
+.next-steps h3 {
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.step {
+  text-align: center;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.step:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.step-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.step h4 {
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.step p {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Important Info */
+.important-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.info-card {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  padding: 1.5rem;
+  border-radius: 15px;
+  text-align: left;
+  border: 1px solid #90caf9;
+}
+
+.info-card h4 {
+  color: #1565c0;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.info-card p {
+  color: #1976d2;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  min-width: 150px;
+  justify-content: center;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, #0056b3, #004085);
+}
+
+.btn-secondary {
+  background: linear-gradient(45deg, #6c757d, #545b62);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(45deg, #545b62, #383d41);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #007bff;
+  border: 2px solid #007bff;
+}
+
+.btn-outline:hover {
+  background: #007bff;
+  color: white;
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .confirmation-page {
+    padding: 1rem;
+    min-height: 70vh;
+  }
+  
+  .confirmation-content {
+    padding: 2rem 1rem;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .important-info {
+    grid-template-columns: 1fr;
+  }
+  
+  .order-details {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .confirmation-content {
+    padding: 1.5rem 1rem;
+  }
+  
+  .checkmark {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  .success-message {
+    font-size: 1rem;
+  }
+}

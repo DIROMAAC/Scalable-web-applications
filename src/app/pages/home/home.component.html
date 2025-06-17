@@ -1,0 +1,117 @@
+<app-header (searchEvent)="onSearch($event)"></app-header>
+
+<main>
+  <section class="featured-categories">
+    <div class="container">
+      <h2 class="section-title">CATEGORÍAS POPULARES</h2>
+      <div class="category-grid">
+        <div class="category-card" (click)="navigateTo('/products/men')">
+          <div class="category-image men"></div>
+          <h3>HOMBRE</h3>
+          <a class="category-link">VER COLECCIÓN</a>
+        </div>
+        
+        <div class="category-card" (click)="navigateTo('/products/women')">
+          <div class="category-image women"></div>
+          <h3>MUJER</h3>
+          <a class="category-link">VER COLECCIÓN</a>
+        </div>
+        
+        <div class="category-card" (click)="navigateTo('/products/accessories')">
+          <div class="category-image accessories"></div>
+          <h3>ACCESORIOS</h3>
+          <a class="category-link">VER COLECCIÓN</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Productos destacados ( filtros laterales) -->
+  <section class="featured-products">
+    <div class="container">
+      <h2 class="section-title">PRODUCTOS POPULARES</h2>
+      
+      <div class="products-container">
+        <!-- Filtros laterales -->
+        <div class="filters-sidebar">
+          <div class="filter-category">
+            <h3>Categorías</h3>
+            <div class="filter-options">
+              <button 
+                [class.active]="activeCategory === 'all'"
+                (click)="onFilterByCategory('all')">Todos</button>
+              <button 
+                [class.active]="activeCategory === 'men'"
+                (click)="onFilterByCategory('men')">Hombres</button>
+              <button 
+                [class.active]="activeCategory === 'women'"
+                (click)="onFilterByCategory('women')">Mujeres</button>
+              <button 
+                [class.active]="activeCategory === 'accessories'"
+                (click)="onFilterByCategory('accessories')">Accesorios</button>
+            </div>
+          </div>
+          
+          <div class="filter-sort">
+            <h3>Ordenar por</h3>
+            <div class="filter-options">
+              <button 
+                [class.active]="activeSorting === 'name'"
+                (click)="onOrderByName()">Nombre</button>
+              <button 
+                [class.active]="activeSorting === 'price-asc'"
+                (click)="onOrderByPrice(true)">Precio (menor a mayor)</button>
+              <button 
+                [class.active]="activeSorting === 'price-desc'"
+                (click)="onOrderByPrice(false)">Precio (mayor a menor)</button>
+            </div>
+          </div>
+          
+          <div class="filter-price">
+            <h3>Rango de precio</h3>
+            <div class="filter-options">
+              <button 
+                [class.active]="selectedPriceRange.min === 0 && selectedPriceRange.max === 1000"
+                (click)="onFilterByPriceRange({min: 0, max: 1000})">Todos</button>
+              <button 
+                [class.active]="selectedPriceRange.min === 0 && selectedPriceRange.max === 25"
+                (click)="onFilterByPriceRange({min: 0, max: 25})">Menos de $25</button>
+              <button 
+                [class.active]="selectedPriceRange.min === 25 && selectedPriceRange.max === 50"
+                (click)="onFilterByPriceRange({min: 25, max: 50})">$25 - $50</button>
+              <button 
+                [class.active]="selectedPriceRange.min === 50 && selectedPriceRange.max === 100"
+                (click)="onFilterByPriceRange({min: 50, max: 100})">$50 - $100</button>
+              <button 
+                [class.active]="selectedPriceRange.min === 100 && selectedPriceRange.max === 1000"
+                (click)="onFilterByPriceRange({min: 100, max: 1000})">Más de $100</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Productos grid (Mantenemos el uso de product-card) -->
+        <div class="products-grid-container">
+          <app-product-card 
+            *ngFor="let product of products"
+            [product]="product"
+            (onDetailsEvent)="onProductDetails($event)"
+          ></app-product-card>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+  
+  <!-- Banner promocional (Mantenemos como está) -->
+  <section class="promo-banner">
+    <div class="container">
+      <div class="promo-content">
+        <h2>PREPÁRATE PARA EL VERANO</h2>
+        <p>Descubre nuestra colección de verano con los mejores precios</p>
+        <a routerLink="/products/summer" class="cta-button">COMPRAR AHORA</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<app-footer></app-footer>

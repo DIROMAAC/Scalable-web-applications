@@ -1,0 +1,52 @@
+<div class="login-container">
+  <div class="logo" (click)="goToHome()">
+    <img src="assets/images/logo.svg" alt="GymStyle Logo">
+  </div>
+  
+  <div class="login-box">
+    <h1>INICIA SESIÓN EN GYMSTYLE</h1>
+    <p class="login-subtitle">Compra tus estilos, guarda tus favoritos, sigue tus pedidos y entrena con nosotros.</p>
+    
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <input 
+          type="email" 
+          [(ngModel)]="email"
+          name="email" 
+          placeholder="Correo electrónico*" 
+          required
+        >
+      </div>
+      
+      <div class="form-group password-group">
+        <input 
+          [type]="showPassword ? 'text' : 'password'" 
+          [(ngModel)]="password"
+          name="password" 
+          placeholder="Contraseña*" 
+          required
+        >
+        <button 
+          type="button" 
+          class="toggle-password" 
+          (click)="togglePasswordVisibility()"
+        >
+          <span>{{ showPassword ? '👁️' : '👁️‍🗨️' }}</span>
+        </button>
+      </div>
+      
+      <div *ngIf="loginError" class="error-message">
+        {{ loginError }}
+      </div>
+      
+      <a href="#" class="forgot-password">¿Has olvidado tu contraseña?</a>
+      
+      <button type="submit" class="login-button">ACCESO</button>
+    </form>
+    
+    <div class="register-link">
+      <span>¿No tienes una cuenta?</span>
+      <a (click)="goToRegister()">Inscríbete</a>
+    </div>
+  </div>
+</div>

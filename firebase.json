@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "dist/proyecto-escalables/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
