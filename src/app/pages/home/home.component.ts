@@ -161,7 +161,7 @@ export class HomeComponent implements OnInit {
         break;
     }
     
-    this.products = filteredProducts.slice(0, 6);
+    this.products = filteredProducts.slice(0, 8);
 
   }
 }
