@@ -8,6 +8,7 @@ import { CartService } from '../../services/cart.service';
 import { OrderService, CreateOrderRequest } from '../../services/order.service';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../environment/environment';
 import { CartItem, CartTotals, UserAddress, ShippingMethod, CheckoutPaymentOption, Product } from '../../interfaces/product.interface';
 import { HttpClient } from '@angular/common/http';
 import { timeout } from 'rxjs/operators';
@@ -719,7 +720,7 @@ debugCompleteAddressFlow(): void {
 }
 private testDirectApiCall(): void {
   const headers = this.authService.getAuthHeaders();
-  const apiUrl = 'http://localhost:3000/api'; // Ajusta esto a tu URL real
+    const apiUrl = environment.apiUrl;
   
   console.log(' Probando API directamente...');
   console.log('- URL:', `${apiUrl}/users/profile`);
