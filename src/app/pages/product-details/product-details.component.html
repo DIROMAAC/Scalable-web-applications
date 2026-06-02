@@ -74,23 +74,29 @@
     </div>
 
     <!-- Selección de cantidad -->
-    <div class="quantity-section">
+    <div class="quantity-section" *ngIf="product.inStock">
       <h3>Cantidad</h3>
-      <div class="quantity-controls">
-        <button 
-          class="quantity-btn"
-          (click)="decrementQuantity()"
-          [disabled]="quantity <= 1"
-        >
-          -
-        </button>
-        <span class="quantity">{{ quantity }}</span>
-        <button 
-          class="quantity-btn"
-          (click)="incrementQuantity()"
-        >
-          +
-        </button>
+      <div class="quantity-controls-container">
+        <div class="quantity-controls">
+          <button 
+            class="quantity-btn"
+            (click)="decrementQuantity()"
+            [disabled]="quantity <= 1"
+          >
+            -
+          </button>
+          <span class="quantity">{{ quantity }}</span>
+          <button 
+            class="quantity-btn"
+            (click)="incrementQuantity()"
+            [disabled]="product && quantity >= (product.stock ?? 10)"
+          >
+            +
+          </button>
+        </div>
+        <span class="stock-badge" *ngIf="product.stock !== undefined">
+          Disponibles: {{ product.stock }} unidades
+        </span>
       </div>
     </div>
     

@@ -305,15 +305,25 @@
   gap: 10px;
 }
 
-/* Tarjetas de dirección y pago */
+/* Tarjetas de dirección y pago (Diseño Premium) */
 .address-card, .payment-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 15px;
+  border: 1px solid #f0f0f0;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+}
+
+.address-card:hover, .payment-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+  border-color: #e0e0e0;
 }
 
 .address-info, .payment-info {
@@ -321,34 +331,44 @@
 }
 
 .address-name, .card-type {
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   margin-bottom: 8px;
-  color: #333;
+  color: #1a1a1a;
+  letter-spacing: -0.2px;
 }
 
 .address-details {
-  color: #666;
-  line-height: 1.4;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .card-number {
   font-family: 'Courier New', monospace;
-  margin-bottom: 5px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
 }
 
 .card-expiry {
   color: #666;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .default-badge {
   display: inline-block;
-  background-color: #28a745;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
+  background-color: #e6f4ea;
+  color: #137333;
+  padding: 6px 12px;
+  border-radius: 20px;
   font-size: 0.75rem;
-  margin-top: 8px;
+  font-weight: 600;
+  margin-top: 10px;
+  letter-spacing: 0.5px;
 }
 
 .address-actions, .payment-actions {
@@ -358,16 +378,21 @@
 }
 
 .address-actions button, .payment-actions button {
-  padding: 8px 15px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  color: #333333;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .address-actions button:hover, .payment-actions button:hover {
-  background-color: #f8f9fa;
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
 }
 
 /* Estado vacío */

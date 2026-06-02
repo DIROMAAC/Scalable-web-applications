@@ -34,7 +34,7 @@ export class CheckoutComponent implements OnInit {
   
   // Direcciones del usuario
   userAddresses: UserAddress[] = [];
-  selectedAddressId: number | null = null;
+  selectedAddressId: any = null;
   
   // Nueva dirección
   newAddress: UserAddress = {
@@ -257,8 +257,8 @@ export class CheckoutComponent implements OnInit {
       const defaultAddress = addresses.find(addr => addr.isDefault);
       const addressToSelect = defaultAddress || addresses[0];
       
-      //  ASIGNACIÓN DIRECTA Y FORZADA
-      this.selectedAddressId = addressToSelect.id;
+      //  ASIGNACIÓN DIRECTA Y FORZADA (Soporta id numérico o _id string de MongoDB)
+      this.selectedAddressId = addressToSelect.id || (addressToSelect as any)._id;
       
       console.log(' DIRECCIÓN SELECCIONADA AUTOMÁTICAMENTE:', {
         id: this.selectedAddressId,
@@ -403,8 +403,8 @@ export class CheckoutComponent implements OnInit {
       return false;
     }
 
-    // Verificar que la dirección existe
-    const selectedAddress = this.userAddresses.find(addr => addr.id === this.selectedAddressId);
+    // Verificar que la dirección existe (Soporta id numérico o _id string de MongoDB)
+    const selectedAddress = this.userAddresses.find(addr => (addr.id || (addr as any)._id) === this.selectedAddressId);
     if (!selectedAddress) {
       this.errorMessage = 'La dirección seleccionada no es válida';
       console.log(' Dirección seleccionada no encontrada');
@@ -416,13 +416,13 @@ export class CheckoutComponent implements OnInit {
   }
 
   //  Gestión de direcciones
-  selectAddress(addressId: number): void {
+  selectAddress(addressId: any): void {
     console.log(' === SELECCIONANDO DIRECCIÓN ===');
     console.log('- ID recibido:', addressId, typeof addressId);
-    console.log('- Direcciones disponibles:', this.userAddresses.map(a => a.id));
+    console.log('- Direcciones disponibles:', this.userAddresses.map(a => a.id || (a as any)._id));
     
-    // Verificar que la dirección existe
-    const addressExists = this.userAddresses.find(addr => addr.id === addressId);
+    // Verificar que la dirección existe (Soporta id numérico o _id string de MongoDB)
+    const addressExists = this.userAddresses.find(addr => (addr.id || (addr as any)._id) === addressId);
     if (!addressExists) {
       console.error(' Dirección no encontrada:', addressId);
       this.errorMessage = 'Dirección no válida';
@@ -462,11 +462,11 @@ export class CheckoutComponent implements OnInit {
         isDefault: false
       };
       
-      // Seleccionar primera dirección disponible
+      // Seleccionar primera dirección disponible (Soporta id numérico o _id string de MongoDB)
       if (this.userAddresses.length > 0) {
         const defaultAddr = this.userAddresses.find(addr => addr.isDefault) || this.userAddresses[0];
-        this.selectedAddressId = defaultAddr.id;
-        console.log(' Volviendo a dirección existente:', defaultAddr.id);
+        this.selectedAddressId = defaultAddr.id || (defaultAddr as any)._id;
+        console.log(' Volviendo a dirección existente:', this.selectedAddressId);
       }
     }
     
@@ -578,7 +578,7 @@ export class CheckoutComponent implements OnInit {
       shippingAddress = this.newAddress;
       console.log(' Usando nueva dirección para envío');
     } else {
-      const selectedAddr = this.userAddresses.find(addr => addr.id === this.selectedAddressId);
+      const selectedAddr = this.userAddresses.find(addr => (addr.id || (addr as any)._id) === this.selectedAddressId);
       if (!selectedAddr) {
         this.errorMessage = 'Dirección de envío no válida';
         this.isProcessingOrder = false;
@@ -641,7 +641,7 @@ export class CheckoutComponent implements OnInit {
     if (this.isAddingNewAddress) {
       return this.newAddress;
     }
-    return this.userAddresses.find(addr => addr.id === this.selectedAddressId) || null;
+    return this.userAddresses.find(addr => (addr.id || (addr as any)._id) === this.selectedAddressId) || null;
   }
 
   //  Getters para el template
@@ -831,9 +831,9 @@ debugCurrentState(): void {
     });
   }
   
-  // Verificar si existe la dirección seleccionada
+  // Verificar si existe la dirección seleccionada (Soporta id numérico o _id string de MongoDB)
   if (this.selectedAddressId) {
-    const found = this.userAddresses.find(addr => addr.id === this.selectedAddressId);
+    const found = this.userAddresses.find(addr => (addr.id || (addr as any)._id) === this.selectedAddressId);
     console.log('- Selected address exists:', !!found);
     if (found) {
       console.log('- Selected address details:', found);

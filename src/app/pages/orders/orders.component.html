@@ -1,0 +1,132 @@
+<app-header></app-header>
+
+<main class="orders-page">
+  <div class="container">
+    
+    <!-- Enlace de regreso al perfil -->
+    <div class="back-link-container">
+      <a (click)="goToProfile()" class="back-link">← Volver a Mi Cuenta</a>
+    </div>
+
+    <div class="orders-header">
+      <h1>Mis Pedidos</h1>
+      <p class="subtitle">Consulta el historial y estado de todas tus compras</p>
+    </div>
+
+    <!-- Alertas -->
+    <div *ngIf="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
+    
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Indicador de carga -->
+    <div *ngIf="isLoading && orders.length === 0" class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando tus pedidos...</p>
+    </div>
+
+    <!-- Estado Vacío -->
+    <div *ngIf="!isLoading && orders.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="package-svg-icon" style="margin-bottom: 20px;"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><polygon points="12 22.08 12 12 3 6.92 3 17.08 12 22.08"></polygon><polygon points="12 22.08 12 12 21 6.92 21 17.08 12 22.08"></polygon><polygon points="12 12 3 6.92 12 1.84 21 6.92 12 12"></polygon><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+      </div>
+      <h2>Aún no tienes pedidos</h2>
+      <p>Realiza tu primera compra para ver tus pedidos aquí.</p>
+      <button routerLink="/" class="shop-now-btn">Ir a Comprar</button>
+    </div>
+
+    <!-- Listado de Pedidos -->
+    <div *ngIf="orders.length > 0" class="orders-list">
+      <div *ngFor="let order of orders" class="order-card">
+        
+        <!-- Cabecera de la Orden -->
+        <div class="order-card-header">
+          <div class="header-info">
+            <div class="info-group">
+              <span class="info-label">PEDIDO</span>
+              <span class="info-value">#{{ (order.id || order._id || '').slice(-8).toUpperCase() }}</span>
+            </div>
+            <div class="info-group">
+              <span class="info-label">FECHA</span>
+              <span class="info-value">{{ order.createdAt | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-group">
+              <span class="info-label">TOTAL</span>
+              <span class="info-value total-price">{{ order.total | currency }}</span>
+            </div>
+          </div>
+
+          <div class="header-status-actions">
+            <!-- Badge de Estado -->
+            <span class="status-badge" [ngClass]="formatStatus(order.status).class">
+              {{ formatStatus(order.status).label }}
+            </span>
+
+            <!-- Acción de Cancelación -->
+            <button 
+              *ngIf="canCancel(order.status)"
+              (click)="cancelOrder(order.id || order._id || '')"
+              class="cancel-order-btn"
+              [disabled]="isLoading"
+            >
+              Cancelar Pedido
+            </button>
+          </div>
+        </div>
+
+        <!-- Productos de la Orden -->
+        <div class="order-items">
+          <div *ngFor="let item of order.items" class="order-item">
+            <div class="item-img">
+              <img [src]="item.image || 'https://via.placeholder.com/150x150?text=Producto'" [alt]="item.name">
+            </div>
+            <div class="item-details">
+              <h3>{{ item.name }}</h3>
+              <p class="item-spec" *ngIf="item.selectedSize">Talla: <strong>{{ item.selectedSize }}</strong></p>
+              <p class="item-qty">Cantidad: {{ item.quantity }}</p>
+            </div>
+            <div class="item-price-info">
+              <span class="price-value">{{ item.price | currency }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pie de tarjeta (Detalles de Envío) -->
+        <div class="order-card-footer">
+          <div class="shipping-details">
+            <p><strong>Dirección de Envío:</strong> {{ order.shippingAddress.address }}, {{ order.shippingAddress.city }} ({{ order.shippingAddress.zipCode }})</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Controles de Paginación -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button 
+          class="page-btn" 
+          [disabled]="currentPage === 1" 
+          (click)="changePage(currentPage - 1)"
+        >
+          « Anterior
+        </button>
+        
+        <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+        
+        <button 
+          class="page-btn" 
+          [disabled]="currentPage === totalPages" 
+          (click)="changePage(currentPage + 1)"
+        >
+          Siguiente »
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<app-footer></app-footer>

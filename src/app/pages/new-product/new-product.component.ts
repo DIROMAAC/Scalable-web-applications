@@ -25,7 +25,7 @@ export class NewProductComponent {
   imageUrl: string = '';
   rating: number = 5.0;
   reviewCount: number = 0;
-  inStock: boolean = true;
+  stock: number = 10;
   
   // Campos para ropa
   gender: 'men' | 'women' = 'men';
@@ -63,7 +63,8 @@ export class NewProductComponent {
         images: [this.imageUrl],
         rating: this.rating,
         reviewCount: this.reviewCount,
-        inStock: this.inStock,
+        stock: this.stock,
+        inStock: this.stock > 0,
         gender: this.gender,
         sizes: sizes,
         fit: this.fit,
@@ -87,7 +88,8 @@ export class NewProductComponent {
         images: [this.imageUrl],
         rating: this.rating,
         reviewCount: this.reviewCount,
-        inStock: this.inStock,
+        stock: this.stock,
+        inStock: this.stock > 0,
         adjustable: this.adjustable,
         productType: 'accessory'
       };

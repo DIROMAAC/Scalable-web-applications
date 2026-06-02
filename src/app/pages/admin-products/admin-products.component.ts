@@ -30,7 +30,7 @@ export class AdminProductsComponent implements OnInit {
     images: [''],
     rating: 5.0,
     reviewCount: 0,
-    inStock: true,
+    stock: 10,
     gender: 'men' as 'men' | 'women',
     sizes: ['S', 'M', 'L', 'XL'],
     fit: 'Regular',
@@ -90,7 +90,7 @@ export class AdminProductsComponent implements OnInit {
       images: product.images?.length ? [...product.images] : [''],
       rating: product.rating || 5.0,
       reviewCount: product.reviewCount || 0,
-      inStock: product.inStock !== false,
+      stock: product.stock ?? 10,
       gender: this.productService.isClothingProduct(product) ? product.gender : 'men',
       sizes: this.productService.isClothingProduct(product) ? [...product.sizes] : ['S', 'M', 'L', 'XL'],
       fit: this.productService.isClothingProduct(product) ? product.fit : 'Regular',
@@ -110,7 +110,7 @@ export class AdminProductsComponent implements OnInit {
       images: [''],
       rating: 5.0,
       reviewCount: 0,
-      inStock: true,
+      stock: 10,
       gender: 'men',
       sizes: ['S', 'M', 'L', 'XL'],
       fit: 'Regular',
@@ -134,7 +134,8 @@ export class AdminProductsComponent implements OnInit {
       images: this.productForm.images.filter(img => img.trim() !== ''),
       rating: this.productForm.rating,
       reviewCount: this.productForm.reviewCount,
-      inStock: this.productForm.inStock,
+      stock: this.productForm.stock,
+      inStock: this.productForm.stock > 0,
       productType: this.productForm.type
     };
 

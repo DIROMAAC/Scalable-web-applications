@@ -24,19 +24,7 @@
     <div *ngIf="errorMessage" class="error-message">
       {{ errorMessage }}
     </div>
-      <!-- BOTONES DE DEBUG SÚPER DETALLADOS -->
-  <div class="debug-section" style="background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px;">
-    <p><strong>🔧 Debug Avanzado:</strong></p>
-    <button (click)="debugCompleteAddressFlow()" class="btn btn-info" style="margin: 5px;">
-      🔍 Debug Completo
-    </button>
-    <button (click)="forceMockAddresses()" class="btn btn-success" style="margin: 5px;">
-      🔧 Forzar Direcciones Mock
-    </button>
-    <button (click)="loadUserAddresses()" class="btn btn-warning" style="margin: 5px;">
-      🔄 Recargar Direcciones
-    </button>
-  </div>
+
   
     <div *ngIf="successMessage" class="success-message">
       {{ successMessage }}
@@ -55,8 +43,8 @@
               <div 
                 *ngFor="let address of userAddresses" 
                 class="address-card"
-                [class.selected]="selectedAddressId === address.id && !isAddingNewAddress"
-                (click)="selectAddress(address.id)"
+                [class.selected]="selectedAddressId === (address.id || address._id) && !isAddingNewAddress"
+                (click)="selectAddress(address.id || address._id)"
               >
                 <div class="address-info">
                   <h4>{{ address.name }}</h4>
@@ -65,7 +53,7 @@
                   <p>{{ address.country }}</p>
                   <span *ngIf="address.isDefault" class="default-badge">Predeterminada</span>
                 </div>
-                <div class="radio-check" *ngIf="selectedAddressId === address.id && !isAddingNewAddress">✓</div>
+                <div class="radio-check" *ngIf="selectedAddressId === (address.id || address._id) && !isAddingNewAddress">✓</div>
               </div>
             </div>
           </div>

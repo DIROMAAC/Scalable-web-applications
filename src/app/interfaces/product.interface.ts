@@ -9,6 +9,7 @@ export interface ProductBase {
     rating: number;
     reviewCount: number;
     inStock: boolean;
+    stock?: number;
     createdAt?: Date;
     updatedAt?: Date;
     productType?: 'clothing' | 'accessory';
@@ -71,6 +72,7 @@ export function isCartItemWithId(item: CartItemUnion): item is CartItemWithId {
 // User interfaces
 export interface UserAddress {
     id: number;
+    _id?: string; // Para compatibilidad con MongoDB
     name: string;
     address: string;
     city: string;
@@ -113,6 +115,7 @@ export interface OrderItem {
 
 export interface Order {
     id: string;
+    _id?: string; // Para compatibilidad con MongoDB
     userId: string; // ✅ Relación con usuario
     date: Date;
     status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'; // ✅ Más específico

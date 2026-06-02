@@ -64,6 +64,12 @@ export class HeaderComponent {
     }
   }
 
+  // Getter para verificar si la ruta actual es la página de inicio (Home)
+  get isHome(): boolean {
+    const currentUrl = this.router.url.split('?')[0];
+    return currentUrl === '/' || currentUrl === '/home';
+  }
+
   // Getter para verificar si el usuario es admin
   get isAdmin(): boolean {
     return this.authService.isAdmin;

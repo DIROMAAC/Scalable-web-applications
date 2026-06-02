@@ -5,14 +5,19 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { OrderService, OrderStats } from '../../services/order.service';
 
-interface Order {
+// Interfaz alineada con la estructura real de MongoDB
+interface AdminOrder {
   _id: string;
   orderNumber: string;
   userId: string;
-  userEmail: string;
-  userName?: string;
-  items: OrderItem[];
+  userInfo: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
+  items: AdminOrderItem[];
   shippingAddress: {
     name: string;
     address: string;
@@ -20,32 +25,34 @@ interface Order {
     state: string;
     zipCode: string;
     country: string;
+    phone?: string;
   };
   paymentInfo: {
     method: string;
-    last4: string;
-    cardType: string;
+    last4?: string;
+    cardType?: string;
+    transactionId?: string;
   };
   shippingMethod: string;
-  pricing: {
-    subtotal: number;
-    shipping: number;
-    tax: number;
-    total: number;
-  };
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   trackingNumber?: string;
+  adminNotes?: string;
   createdAt: string;
   updatedAt: string;
 }
 
-interface OrderItem {
+interface AdminOrderItem {
   productId?: string;
-  productName: string;
+  productModel?: string;
+  name: string;
+  price: number;
   quantity: number;
-  unitPrice: number;
   selectedSize?: string;
-  total: number;
+  image?: string;
 }
 
 @Component({
@@ -57,37 +64,39 @@ interface OrderItem {
 })
 export class AdminOrdersComponent implements OnInit, OnDestroy {
   // Datos
-  orders: Order[] = [];
-  filteredOrders: Order[] = [];
-  selectedOrder: Order | null = null;
-  
+  orders: AdminOrder[] = [];
+  filteredOrders: AdminOrder[] = [];
+  selectedOrder: AdminOrder | null = null;
+
   // Estados
   isLoading = false;
   error = '';
   successMessage = '';
-  
-  // Filtros
+
+  // Filtros (aplicados en el servidor)
   filterStatus = 'all';
   filterSearch = '';
   filterDateFrom = '';
   filterDateTo = '';
-  
-  // Paginación
+
+  // Paginación (servidor)
   currentPage = 1;
   itemsPerPage = 10;
   totalPages = 1;
-  
+  totalOrders = 0;
+
   // Modal
   showOrderModal = false;
   showStatusModal = false;
   newStatus = '';
   newTrackingNumber = '';
-  
+  newAdminNotes = '';
+  isSavingStatus = false;
+
   // Estadísticas
   stats = {
     total: 0,
     pending: 0,
-    confirmed: 0,
     processing: 0,
     shipped: 0,
     delivered: 0,
@@ -98,225 +107,159 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private router: Router
+    private router: Router,
+    private orderService: OrderService
   ) {}
 
   ngOnInit(): void {
-    console.log('📋 Inicializando AdminOrdersComponent...');
     this.loadOrders();
+    this.loadStats();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  //  CARGAR ÓRDENES (por ahora mock, mañana conectamos con API)
+  // Cargar órdenes desde la API real
   loadOrders(): void {
     this.isLoading = true;
-    console.log(' Cargando órdenes...');
-    
-    // Simular delay de API
-    setTimeout(() => {
-      // MOCK DATA - Mañana reemplazaremos con llamada real a la API
-      this.orders = this.generateMockOrders();
-      this.applyFilters();
-      this.calculateStats();
-      this.isLoading = false;
-      console.log(' Órdenes cargadas:', this.orders.length);
-    }, 1000);
+    this.error = '';
+
+    const filters: any = {};
+    if (this.filterStatus !== 'all') filters.status = this.filterStatus;
+    if (this.filterSearch.trim())    filters.orderNumber = this.filterSearch.trim();
+    if (this.filterDateFrom)         filters.startDate = this.filterDateFrom;
+    if (this.filterDateTo)           filters.endDate = this.filterDateTo;
+
+    const sub = this.orderService.getAllOrders(this.currentPage, this.itemsPerPage, filters)
+      .subscribe({
+        next: (response) => {
+          if (response.ok && response.orders) {
+            this.orders = response.orders as unknown as AdminOrder[];
+            this.filteredOrders = this.orders;
+            this.totalOrders = response.pagination?.totalOrders ?? this.orders.length;
+            this.totalPages  = response.pagination?.totalPages ?? 1;
+          }
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error cargando órdenes:', err);
+          this.error = typeof err === 'string' ? err : 'Error al cargar las órdenes del servidor';
+          this.isLoading = false;
+        }
+      });
+
+    this.subscriptions.push(sub);
   }
 
-  //  GENERAR DATOS MOCK (temporal)
-  private generateMockOrders(): Order[] {
-    const statuses: Array<Order['status']> = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
-    const paymentMethods = ['credit_card', 'debit_card', 'paypal'];
-    const shippingMethods = ['standard', 'express'];
-    
-    return Array.from({ length: 25 }, (_, i) => {
-      const orderNumber = `ORD-${Date.now() - (i * 86400000)}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
-      const status = statuses[Math.floor(Math.random() * statuses.length)];
-      const itemCount = Math.floor(Math.random() * 3) + 1;
-      const subtotal = Math.floor(Math.random() * 200) + 50;
-      const shipping = Math.random() > 0.3 ? 5.99 : 0;
-      const tax = subtotal * 0.21;
-      const total = subtotal + shipping + tax;
-      
-      return {
-        _id: `order_${i + 1}`,
-        orderNumber,
-        userId: `user_${Math.floor(Math.random() * 10) + 1}`,
-        userEmail: `usuario${Math.floor(Math.random() * 10) + 1}@email.com`,
-        userName: `Usuario ${Math.floor(Math.random() * 10) + 1}`,
-        items: Array.from({ length: itemCount }, (_, j) => ({
-          productId: `prod_${j + 1}`,
-          productName: `Producto ${j + 1}`,
-          quantity: Math.floor(Math.random() * 3) + 1,
-          unitPrice: Math.floor(Math.random() * 50) + 20,
-          selectedSize: Math.random() > 0.5 ? ['S', 'M', 'L', 'XL'][Math.floor(Math.random() * 4)] : undefined,
-          total: Math.floor(Math.random() * 100) + 30
-        })),
-        shippingAddress: {
-          name: `Dirección ${i + 1}`,
-          address: `Calle ${i + 1}, ${Math.floor(Math.random() * 100) + 1}`,
-          city: ['Madrid', 'Barcelona', 'Valencia', 'Sevilla'][Math.floor(Math.random() * 4)],
-          state: ['Madrid', 'Cataluña', 'Valencia', 'Andalucía'][Math.floor(Math.random() * 4)],
-          zipCode: `${Math.floor(Math.random() * 90000) + 10000}`,
-          country: 'España'
-        },
-        paymentInfo: {
-          method: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
-          last4: Math.floor(Math.random() * 9000 + 1000).toString(),
-          cardType: ['Visa', 'Mastercard', 'American Express'][Math.floor(Math.random() * 3)]
-        },
-        shippingMethod: shippingMethods[Math.floor(Math.random() * shippingMethods.length)],
-        pricing: {
-          subtotal,
-          shipping,
-          tax,
-          total
-        },
-        status,
-        trackingNumber: status === 'shipped' || status === 'delivered' ? `TRK${Math.floor(Math.random() * 1000000000)}` : undefined,
-        createdAt: new Date(Date.now() - (i * 86400000)).toISOString(),
-        updatedAt: new Date(Date.now() - (i * 43200000)).toISOString()
-      };
+  // Cargar estadísticas globales desde la API
+  loadStats(): void {
+    const sub = this.orderService.getOrderStats().subscribe({
+      next: (data) => {
+        const s = data.stats;
+        this.stats.total        = s.totalOrders;
+        this.stats.pending      = s.pendingOrders;
+        this.stats.processing   = s.processingOrders;
+        this.stats.shipped      = s.shippedOrders;
+        this.stats.delivered    = s.deliveredOrders;
+        this.stats.cancelled    = s.cancelledOrders;
+        this.stats.totalRevenue = s.totalRevenue;
+      },
+      error: (err) => {
+        console.error('Error cargando estadísticas:', err);
+      }
     });
+    this.subscriptions.push(sub);
   }
 
-  //  APLICAR FILTROS
+  // Aplicar filtros: recarga desde el servidor con los nuevos parámetros
   applyFilters(): void {
-    let filtered = [...this.orders];
-    
-    // Filtro por estado
-    if (this.filterStatus !== 'all') {
-      filtered = filtered.filter(order => order.status === this.filterStatus);
-    }
-    
-    // Filtro por búsqueda
-    if (this.filterSearch.trim()) {
-      const search = this.filterSearch.toLowerCase().trim();
-      filtered = filtered.filter(order => 
-        order.orderNumber.toLowerCase().includes(search) ||
-        order.userEmail.toLowerCase().includes(search) ||
-        order.userName?.toLowerCase().includes(search)
-      );
-    }
-    
-    // Filtro por fecha
-    if (this.filterDateFrom) {
-      filtered = filtered.filter(order => 
-        new Date(order.createdAt) >= new Date(this.filterDateFrom)
-      );
-    }
-    
-    if (this.filterDateTo) {
-      filtered = filtered.filter(order => 
-        new Date(order.createdAt) <= new Date(this.filterDateTo + 'T23:59:59')
-      );
-    }
-    
-    this.filteredOrders = filtered;
-    this.calculatePagination();
+    this.currentPage = 1;
+    this.loadOrders();
   }
 
-  //  CALCULAR PAGINACIÓN
-  calculatePagination(): void {
-    this.totalPages = Math.ceil(this.filteredOrders.length / this.itemsPerPage);
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = 1;
-    }
-  }
-
-  //  OBTENER ÓRDENES DE LA PÁGINA ACTUAL
-  getCurrentPageOrders(): Order[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    return this.filteredOrders.slice(startIndex, endIndex);
-  }
-
-  //  CALCULAR ESTADÍSTICAS
-  calculateStats(): void {
-    this.stats.total = this.orders.length;
-    this.stats.pending = this.orders.filter(o => o.status === 'pending').length;
-    this.stats.confirmed = this.orders.filter(o => o.status === 'confirmed').length;
-    this.stats.processing = this.orders.filter(o => o.status === 'processing').length;
-    this.stats.shipped = this.orders.filter(o => o.status === 'shipped').length;
-    this.stats.delivered = this.orders.filter(o => o.status === 'delivered').length;
-    this.stats.cancelled = this.orders.filter(o => o.status === 'cancelled').length;
-    this.stats.totalRevenue = this.orders
-      .filter(o => o.status !== 'cancelled')
-      .reduce((sum, o) => sum + o.pricing.total, 0);
-  }
-
-  //  NAVEGACIÓN DE PÁGINAS
+  // Paginación
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
+      this.loadOrders();
     }
   }
 
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.loadOrders();
     }
   }
 
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      this.loadOrders();
     }
   }
 
-  //  GESTIÓN DE ÓRDENES
-  viewOrder(order: Order): void {
+  getCurrentPageOrders(): AdminOrder[] {
+    // Con paginación del servidor, el arreglo ya tiene solo la página actual
+    return this.orders;
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const start = Math.max(1, this.currentPage - 2);
+    const end   = Math.min(this.totalPages, this.currentPage + 2);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  }
+
+  // Ver detalles de una orden
+  viewOrder(order: AdminOrder): void {
     this.selectedOrder = order;
     this.showOrderModal = true;
   }
 
-  editOrderStatus(order: Order): void {
+  // Abrir modal para cambiar estado
+  editOrderStatus(order: AdminOrder): void {
     this.selectedOrder = order;
     this.newStatus = order.status;
     this.newTrackingNumber = order.trackingNumber || '';
+    this.newAdminNotes = order.adminNotes || '';
     this.showStatusModal = true;
+    this.showOrderModal = false;
   }
 
+  // Actualizar estado vía API real
   updateOrderStatus(): void {
     if (!this.selectedOrder) return;
-    
-    console.log(' Actualizando estado de orden:', this.selectedOrder.orderNumber);
-    
-    // TODO: Mañana conectar con API real
-    // Por ahora actualizar mock data
-    const orderIndex = this.orders.findIndex(o => o._id === this.selectedOrder!._id);
-    if (orderIndex !== -1) {
-      this.orders[orderIndex].status = this.newStatus as Order['status'];
-      this.orders[orderIndex].trackingNumber = this.newTrackingNumber || undefined;
-      this.orders[orderIndex].updatedAt = new Date().toISOString();
-    }
-    
-    this.applyFilters();
-    this.calculateStats();
-    this.closeModals();
-    this.successMessage = 'Estado de orden actualizado exitosamente';
-    
-    setTimeout(() => this.successMessage = '', 3000);
+
+    this.isSavingStatus = true;
+    this.error = '';
+
+    const sub = this.orderService.updateOrderStatus(this.selectedOrder._id, {
+      status: this.newStatus,
+      trackingNumber: this.newTrackingNumber || undefined,
+      adminNotes: this.newAdminNotes || undefined
+    }).subscribe({
+      next: (_updatedOrder) => {
+        this.isSavingStatus = false;
+        this.closeModals();
+        this.successMessage = 'Estado de la orden actualizado exitosamente';
+        setTimeout(() => this.successMessage = '', 3000);
+        // Recargar lista y estadísticas
+        this.loadOrders();
+        this.loadStats();
+      },
+      error: (err) => {
+        console.error('Error actualizando orden:', err);
+        this.error = typeof err === 'string' ? err : 'Error al actualizar el estado de la orden';
+        this.isSavingStatus = false;
+      }
+    });
+    this.subscriptions.push(sub);
   }
 
-  deleteOrder(order: Order): void {
-    if (confirm(`¿Estás seguro de que quieres eliminar la orden ${order.orderNumber}?`)) {
-      console.log(' Eliminando orden:', order.orderNumber);
-      
-      // TODO: Mañana conectar con API real
-      this.orders = this.orders.filter(o => o._id !== order._id);
-      this.applyFilters();
-      this.calculateStats();
-      
-      this.successMessage = 'Orden eliminada exitosamente';
-      setTimeout(() => this.successMessage = '', 3000);
-    }
-  }
-
-  //  UTILIDADES
+  // Utilidades
   closeModals(): void {
     this.showOrderModal = false;
     this.showStatusModal = false;
@@ -329,63 +272,86 @@ export class AdminOrdersComponent implements OnInit, OnDestroy {
     this.filterDateFrom = '';
     this.filterDateTo = '';
     this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  exportOrders(): void {
-    console.log(' Exportando órdenes...');
-    // TODO: Implementar exportación
-    alert('Función de exportación en desarrollo');
+    this.loadOrders();
   }
 
   refreshOrders(): void {
     this.loadOrders();
+    this.loadStats();
   }
 
-  //  GETTERS PARA TEMPLATES
+  exportOrders(): void {
+    alert('Función de exportación en desarrollo');
+  }
+
+  goToProductManagement(): void {
+    this.router.navigate(['/admin/products']);
+  }
+
+  // Helpers para el template
   getStatusClass(status: string): string {
     const classes: { [key: string]: string } = {
-      pending: 'status-pending',
-      confirmed: 'status-confirmed',
+      pending:    'status-pending',
       processing: 'status-processing',
-      shipped: 'status-shipped',
-      delivered: 'status-delivered',
-      cancelled: 'status-cancelled'
+      shipped:    'status-shipped',
+      delivered:  'status-delivered',
+      cancelled:  'status-cancelled'
     };
     return classes[status] || 'status-default';
   }
 
   getStatusText(status: string): string {
     const texts: { [key: string]: string } = {
-      pending: 'Pendiente',
-      confirmed: 'Confirmada',
+      pending:    'Pendiente',
       processing: 'Procesando',
-      shipped: 'Enviada',
-      delivered: 'Entregada',
-      cancelled: 'Cancelada'
+      shipped:    'Enviada',
+      delivered:  'Entregada',
+      cancelled:  'Cancelada'
     };
     return texts[status] || status;
   }
 
+  getPaymentMethodText(method: string): string {
+    const map: { [key: string]: string } = {
+      credit_card:    'Tarjeta de Crédito',
+      debit_card:     'Tarjeta de Débito',
+      paypal:         'PayPal',
+      bank_transfer:  'Transferencia Bancaria'
+    };
+    return map[method] || method;
+  }
+
+  getShippingMethodText(method: string): string {
+    const map: { [key: string]: string } = {
+      standard:  'Estándar',
+      express:   'Express',
+      overnight: 'Entrega al Día Siguiente'
+    };
+    return map[method] || method;
+  }
+
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
     });
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('es-ES', {
+    return new Intl.NumberFormat('es-MX', {
       style: 'currency',
-      currency: 'EUR'
-    }).format(amount);
+      currency: 'MXN'
+    }).format(amount ?? 0);
   }
 
-  //  MÉTODO PARA NAVEGAR A PRODUCTOS
-  goToProductManagement(): void {
-    this.router.navigate(['/admin/products']);
+  getCustomerName(order: AdminOrder): string {
+    if (order.userInfo) {
+      return `${order.userInfo.firstName} ${order.userInfo.lastName}`.trim();
+    }
+    return 'Cliente';
+  }
+
+  getCustomerEmail(order: AdminOrder): string {
+    return order.userInfo?.email ?? '';
   }
 }

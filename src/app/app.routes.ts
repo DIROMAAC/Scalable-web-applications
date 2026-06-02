@@ -1,22 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
-import { ProductDetailsComponent } from './pages/product-details/product-details.component';
-import { MensProductsComponent } from './pages/mens-products/mens-products.component';
-import { WomensProductsComponent } from './pages/womens-products/womens-products.component';
-import { AccessoriesComponent } from './pages/accessories/accessories.component';
-import { SearchResultsComponent } from './pages/search-results/search-results.component';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
-import { ProfileComponent } from './pages/profile/profile.component';
-import { AdminProductsComponent } from './pages/admin-products/admin-products.component';
-import { ShippingPolicyComponent } from './pages/shipping-policy/shipping-policy.component';
-import { NotFoundComponent } from './pages/not-found/not-found.component';
-import { CartComponent } from './pages/cart/cart.component';
-import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { adminGuard } from './guards/admin.guard';
 import { authGuard } from './guards/auth.guard';
-import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
-import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
 
 export const routes: Routes = [
   {
@@ -25,67 +10,72 @@ export const routes: Routes = [
   },
   {
     path: 'product/:id',
-    component: ProductDetailsComponent
+    loadComponent: () => import('./pages/product-details/product-details.component').then(m => m.ProductDetailsComponent)
   },
   {
     path: 'products/men',
-    component: MensProductsComponent
+    loadComponent: () => import('./pages/mens-products/mens-products.component').then(m => m.MensProductsComponent)
   },
   {
     path: 'products/women',
-    component: WomensProductsComponent
+    loadComponent: () => import('./pages/womens-products/womens-products.component').then(m => m.WomensProductsComponent)
   },
   {
     path: 'products/accessories',
-    component: AccessoriesComponent
+    loadComponent: () => import('./pages/accessories/accessories.component').then(m => m.AccessoriesComponent)
   },
   {
     path: 'search',
-    component: SearchResultsComponent
+    loadComponent: () => import('./pages/search-results/search-results.component').then(m => m.SearchResultsComponent)
   },
   {
     path: 'cart',
-    component: CartComponent
+    loadComponent: () => import('./pages/cart/cart.component').then(m => m.CartComponent)
   },
   {
     path: 'checkout',
-    component: CheckoutComponent,
+    loadComponent: () => import('./pages/checkout/checkout.component').then(m => m.CheckoutComponent),
     canActivate: [authGuard] // Requiere autenticación
   },
   {
     path: 'login',
-    component: LoginComponent
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent)
   },
   {
     path: 'register',
-    component: RegisterComponent
+    loadComponent: () => import('./pages/register/register.component').then(m => m.RegisterComponent)
   },
   {
     path: 'profile',
-    component: ProfileComponent,
+    loadComponent: () => import('./pages/profile/profile.component').then(m => m.ProfileComponent),
+    canActivate: [authGuard] // Requiere autenticación
+  },
+  {
+    path: 'orders',
+    loadComponent: () => import('./pages/orders/orders.component').then(m => m.OrdersComponent),
     canActivate: [authGuard] // Requiere autenticación
   },
   {
     path: 'admin/products',
-    component: AdminProductsComponent,
+    loadComponent: () => import('./pages/admin-products/admin-products.component').then(m => m.AdminProductsComponent),
     canActivate: [adminGuard] // Requiere ser admin
   },
   {
     path: 'admin/orders',
-    component: AdminOrdersComponent,
+    loadComponent: () => import('./pages/admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent),
     canActivate: [adminGuard] // Si hay guard de admin
   },
   {
     path: 'shipping-policy',
-    component: ShippingPolicyComponent
+    loadComponent: () => import('./pages/shipping-policy/shipping-policy.component').then(m => m.ShippingPolicyComponent)
   },
   {
     path: 'order-confirmation/:id',
-    component: OrderConfirmationComponent
+    loadComponent: () => import('./pages/order-confirmation/order-confirmation.component').then(m => m.OrderConfirmationComponent)
   },
   {
     path: 'not-found',
-    component: NotFoundComponent
+    loadComponent: () => import('./pages/not-found/not-found.component').then(m => m.NotFoundComponent)
   },
   {
     path: '**',

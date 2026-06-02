@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Product, CartItem, CartTotals } from '../interfaces/product.interface';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +20,21 @@ export class CartService {
   public cartItems$ = this.cartItemsSubject.asObservable();
   public cartTotals$ = this.cartTotalsSubject.asObservable();
 
-  constructor() {
+  constructor(private storageService: StorageService) {
     console.log(' CartService inicializado');
+    
+    // Recuperar carrito guardado al instanciar el servicio
+    const savedCart = this.storageService.getItem('gymstyle_cart');
+    if (savedCart) {
+      try {
+        this.cartItems = JSON.parse(savedCart);
+        this.cartItemsSubject.next([...this.cartItems]);
+      } catch (error) {
+        console.error('Error al parsear el carrito guardado:', error);
+        this.cartItems = [];
+      }
+    }
+    
     this.calculateTotals();
   }
 
@@ -165,6 +179,13 @@ export class CartService {
   private updateCart(): void {
     this.cartItemsSubject.next([...this.cartItems]);
     this.calculateTotals();
+    
+    // Guardar estado actualizado en LocalStorage seguro
+    try {
+      this.storageService.setItem('gymstyle_cart', JSON.stringify(this.cartItems));
+    } catch (error) {
+      console.error('Error al guardar el carrito en LocalStorage:', error);
+    }
     
     console.log('🛒 Estado del carrito actualizado:', {
       items: this.cartItems.length,
