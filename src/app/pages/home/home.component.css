@@ -94,7 +94,7 @@
 .featured-products {
   padding: 40px 0 80px;
   background-color: #f8f9fa;
-  height: 1300px;
+  min-height: 800px;
 }
 
 .products-grid {
@@ -145,11 +145,7 @@
   background-color: #c1121f;
 }
 
-.featured-products {
-  padding: 40px 0 80px;
-  background-color: #f8f9fa;
-  min-height: 800px; /* En lugar de height fija para adaptarse a contenido */
-}
+/* Estilos de productos consolidados en el bloque superior */
 
 .products-container {
   display: flex;
@@ -227,6 +223,7 @@
   
   .filters-sidebar {
     width: 100%;
+    margin-left: 0; /* Resetear margen izquierdo para centrar filtros en tablets y móviles */
   }
   
   .filter-options {
@@ -240,6 +237,19 @@
 }
 
 @media (max-width: 768px) {
+  .category-grid {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .category-card {
+    height: 400px; /* Reducir altura en pantallas móviles para vista vertical apilada */
+  }
+  
+  .category-image {
+    height: 320px;
+  }
+
   .products-grid-container app-product-card {
     flex: 0 0 100%; /* 1 producto por fila */
   }
